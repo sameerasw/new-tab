@@ -7,20 +7,22 @@ const backgroundDiv = document.getElementById("background");
 // Default settings
 let settings = {
   iconsPerRow: 6,
-  // bgUrl: '',
-  folderId: "1", // '1' is usually the bookmarks bar in Chrome
+  folderId: "1",
   customCss: "",
   maxEntries: 100,
+  clockWeight: 300,
+  clockWidth: 100,
+  clockRound: 0
 };
 
 // Load settings from storage
 function loadSettings() {
   chrome.storage.local.get(null, (data) => {
     settings = { ...settings, ...data };
-    // if (settings.bgUrl) backgroundDiv.style.backgroundImage = `url('${settings.bgUrl}')`;
-    // else backgroundDiv.style.backgroundImage = '';
     loadAndRenderBookmarks();
     loadCustomCss();
+    applyClockSettings();
+    initSettingsUI();
   });
 }
 
@@ -158,11 +160,15 @@ function loadFaviconWithFallbacks(img, url, cacheBuster = false) {
 // Initial load
 loadSettings();
 
-// Keyboard shortcut Ctrl+Shift+R (or Cmd+Shift+R) to refetch missing favicons
+// Keyboard shortcut Ctrl+Shift+R to refetch missing favicons, and Ctrl+, to open settings
 window.addEventListener("keydown", (e) => {
   if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === "r") {
     e.preventDefault();
     refetchFavicons();
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === ",") {
+    e.preventDefault();
+    toggleSettings();
   }
 });
 
@@ -200,3 +206,70 @@ function updateClock() {
 }
 setInterval(updateClock, 1000);
 updateClock();
+
+function applyClockSettings() {
+  const clock = document.getElementById("clock");
+  if (!clock) return;
+
+  clock.style.fontWeight = settings.clockWeight ?? 300;
+  clock.style.fontVariationSettings = `"slnt" 0, "wdth" ${settings.clockWidth ?? 100}, "GRAD" 0, "ROND" ${settings.clockRound ?? 0}`;
+
+  // Update inputs
+  const wInput = document.getElementById("axis-weight");
+  if (wInput) wInput.value = settings.clockWeight ?? 300;
+
+  const wdInput = document.getElementById("axis-width");
+  if (wdInput) wdInput.value = settings.clockWidth ?? 100;
+
+  const rInput = document.getElementById("axis-round");
+  if (rInput) rInput.value = settings.clockRound ?? 0;
+}
+
+function initSettingsUI() {
+  const modal = document.getElementById("settings-modal");
+
+  // Close the settings modal when clicking outside of it
+  document.addEventListener("click", (e) => {
+    if (modal && modal.classList.contains("show")) {
+      if (!modal.contains(e.target)) {
+        modal.classList.remove("show");
+      }
+    }
+  });
+
+  const wInput = document.getElementById("axis-weight");
+  const wdInput = document.getElementById("axis-width");
+  const rInput = document.getElementById("axis-round");
+
+  const updateSetting = (key, val) => {
+    settings[key] = val;
+    chrome.storage.local.set({ [key]: val });
+    applyClockSettings();
+  };
+
+  if (wInput) {
+    wInput.addEventListener("input", (e) => {
+      updateSetting("clockWeight", parseInt(e.target.value));
+    });
+  }
+  if (wdInput) {
+    wdInput.addEventListener("input", (e) => {
+      updateSetting("clockWidth", parseInt(e.target.value));
+    });
+  }
+  if (rInput) {
+    rInput.addEventListener("input", (e) => {
+      updateSetting("clockRound", parseInt(e.target.value));
+    });
+  }
+}
+
+function toggleSettings() {
+  const modal = document.getElementById("settings-modal");
+  if (modal) {
+    modal.classList.toggle("show");
+    if (modal.classList.contains("show")) {
+      applyClockSettings();
+    }
+  }
+}

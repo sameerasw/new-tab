@@ -5,7 +5,8 @@
   --icon-bg: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.08));
   --icon-hover-bg: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.18));
   --shadow-color: light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
-  --panel-bg: light-dark(rgba(240, 240, 240, 0.95), rgba(30, 30, 30, 0.95));
+  --panel-bg: light-dark(#fff7, #0007);
+  --panel-blur: 10px;
   --panel-border: light-dark(#cccccc, #444444);
   --input-bg: light-dark(#ffffff, #181818);
   --input-color: light-dark(#222222, #eeeeee);
@@ -166,4 +167,54 @@ body {
 
 #options-container {
   padding-left: 2%;
+}
+
+#settings-modal {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  background: var(--panel-bg);
+  backdrop-filter: blur(var(--panel-blur));
+  color: var(--text-color);
+  border: none;
+  border-radius: 12px;
+  padding: 1.2rem;
+  width: 250px;
+  z-index: 10;
+  box-shadow: 0 8px 24px var(--shadow-color);
+  display: none;
+}
+
+#settings-modal.show {
+  display: block;
+}
+
+.settings-content h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 0.8rem;
+}
+
+.setting-item label {
+  flex: 0 0 75px;
+  font-size: 0.85rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  opacity: 0.8;
+}
+
+.setting-item input[type="range"] {
+  flex-grow: 1;
+  accent-color: var(--text-color);
+  cursor: pointer;
+  margin: 0;
 }

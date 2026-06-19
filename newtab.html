@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:ROND,opsz,wdth,wght@0..100,6..144,25..150,100..1000&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
@@ -20,6 +20,23 @@
           <div id="clock"></div>
         </div>
         <div id="bookmarks-grid"></div>
+      </div>
+    </div>
+    <div id="settings-modal">
+      <div class="settings-content">
+        <h3>Settings</h3>
+        <div class="setting-item">
+          <label for="axis-weight">Weight</label>
+          <input type="range" id="axis-weight" min="100" max="1000" value="300">
+        </div>
+        <div class="setting-item">
+          <label for="axis-width">Width</label>
+          <input type="range" id="axis-width" min="25" max="150" value="100">
+        </div>
+        <div class="setting-item">
+          <label for="axis-round">Roundness</label>
+          <input type="range" id="axis-round" min="0" max="100" value="0">
+        </div>
       </div>
     </div>
     <script
