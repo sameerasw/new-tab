@@ -1,143 +1,169 @@
 :root {
-    color-scheme: light dark;
-    --bg-color: light-dark(#ffffff, #222222);
-    --text-color: light-dark(#222222, #eeeeee);
-    --icon-bg: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.08));
-    --icon-hover-bg: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.18));
-    --shadow-color: light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
-    --panel-bg: light-dark(rgba(240, 240, 240, 0.95), rgba(30, 30, 30, 0.95));
-    --panel-border: light-dark(#cccccc, #444444);
-    --input-bg: light-dark(#ffffff, #181818);
-    --input-color: light-dark(#222222, #eeeeee);
+  color-scheme: light dark;
+  --bg-color: light-dark(#ffffff, #222222);
+  --text-color: light-dark(#222222, #eeeeee);
+  --icon-bg: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.08));
+  --icon-hover-bg: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.18));
+  --shadow-color: light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
+  --panel-bg: light-dark(rgba(240, 240, 240, 0.95), rgba(30, 30, 30, 0.95));
+  --panel-border: light-dark(#cccccc, #444444);
+  --input-bg: light-dark(#ffffff, #181818);
+  --input-color: light-dark(#222222, #eeeeee);
 }
 
 body,
 html {
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
-    background: var(--bg-color);
-    color: var(--text-color);
-    overflow: auto;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: var(--bg-color);
+  color: var(--text-color);
+  overflow: auto;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 body {
-    font-size: 100%;
+  font-size: 100%;
 }
 
 #background {
-    position: fixed;
-    z-index: 0;
-    background-size: cover;
-    background-position: center;
-    min-height: 100vh;
-    min-width: 100vw;
-    max-width: 100vw;
-    height: 100%;
-    width: 100%;
-    overflow-y: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  position: fixed;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  min-width: 100vw;
+  max-width: 100vw;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #bookmarks-container {
-    z-index: 1;
-    max-height: 100vh;
-    max-width: 100vw;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem;
-    box-sizing: border-box;
+  z-index: 1;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 2rem 2rem 6vh 2rem;
+  box-sizing: border-box;
+}
+
+#clock-container {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#clock {
+  font-family: "Google Sans Flex", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-variation-settings:
+    "slnt" 0,
+    "wdth" 100,
+    "GRAD" 0,
+    "ROND" 0;
+  font-size: 5.5rem;
+  color: var(--text-color);
+  letter-spacing: -0.03em;
+  user-select: none;
 }
 
 #bookmarks-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    max-width: 80vw;
-    width: 100%;
-    margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  max-width: 80vw;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .bookmark-row {
-    display: none;
+  display: none;
 }
 
 .bookmark-icon {
-    width: 3.5rem;
-    height: 3.5rem;
-    margin: 0.3rem;
-    cursor: pointer;
-    background: var(--icon-bg);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-decoration: none;
-    transition: background 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 12px var(--shadow-color);
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: 0.3rem;
+  cursor: pointer;
+  background: var(--icon-bg);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  transition:
+    background 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    border-radius 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .bookmark-icon-inner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
 }
 
 .bookmark-icon:hover {
-    background: var(--icon-hover-bg);
-    border-radius: 0.75rem;
-    box-shadow: 0 6px 16px var(--shadow-color);
+  background: var(--icon-hover-bg);
+  border-radius: 0.75rem;
+  box-shadow: 0 6px 16px var(--shadow-color);
 }
 
 .bookmark-icon img {
-    width: 1.75rem;
-    height: 1.75rem;
-    object-fit: contain;
-    display: block;
+  width: 1.75rem;
+  height: 1.75rem;
+  object-fit: contain;
+  display: block;
 }
 
 #controls,
 #css-editor-container {
-    position: fixed;
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2;
-    background: var(--panel-bg);
-    color: var(--text-color);
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.625rem;
-    margin-top: 0.5rem;
-    box-shadow: 0 0.125rem 0.5rem var(--shadow-color);
-    border: 1px solid var(--panel-border);
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  background: var(--panel-bg);
+  color: var(--text-color);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.625rem;
+  margin-top: 0.5rem;
+  box-shadow: 0 0.125rem 0.5rem var(--shadow-color);
+  border: 1px solid var(--panel-border);
 }
 
 #controls label,
 #css-editor-container label {
-    margin-right: 0.75rem;
+  margin-right: 0.75rem;
 }
 
 #customCss {
-    width: 100%;
-    min-width: 18.75rem;
-    max-width: 37.5rem;
-    font-family: monospace;
-    background: var(--input-bg);
-    color: var(--input-color);
-    border: 1px solid var(--panel-border);
-    border-radius: 0.25rem;
-    margin-bottom: 0.5rem;
+  width: 100%;
+  min-width: 18.75rem;
+  max-width: 37.5rem;
+  font-family: monospace;
+  background: var(--input-bg);
+  color: var(--input-color);
+  border: 1px solid var(--panel-border);
+  border-radius: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 #options-container {
-    padding-left: 2%;
+  padding-left: 2%;
 }
