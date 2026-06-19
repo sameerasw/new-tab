@@ -58,7 +58,7 @@ body {
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
-  padding: 2rem 2rem 6vh 2rem;
+  padding: 2rem 2rem 0vh 2rem;
   box-sizing: border-box;
 }
 
@@ -498,6 +498,8 @@ body:has(#settings-modal.show .settings-section[data-section="bookmarks"]:hover)
   overflow: hidden;
   height: 0;
   opacity: 0;
+  box-sizing: border-box;
+  padding-bottom: 2rem;
 }
 
 #bg-image {

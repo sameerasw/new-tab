@@ -226,6 +226,7 @@ function renderBookmarks(bookmarks) {
     }
   });
   applyStaggeredRowAnimations();
+  calculateNaturalHeight();
   resetScrollProgress();
 }
 
@@ -256,6 +257,9 @@ function applyStaggeredRowAnimations() {
 
 window.addEventListener("resize", () => {
   applyStaggeredRowAnimations();
+  calculateNaturalHeight();
+  const progress = scrollY / maxScroll;
+  applyScrollTransition(progress);
 });
 
 function loadFaviconWithFallbacks(img, url, cacheBuster = false) {
@@ -491,6 +495,8 @@ function applyClockSettings() {
       updateCustomSlider(input);
     }
   });
+
+  calculateNaturalHeight();
 }
 
 function initSettingsUI() {
@@ -593,6 +599,23 @@ function toggleSettings() {
 
 let scrollY = 0;
 const maxScroll = 120; // total scroll needed in pixels to fully show bookmarks
+let standardContainerNaturalHeight = 0;
+
+function calculateNaturalHeight() {
+  const standardContainer = document.getElementById("standard-bookmarks-container");
+  if (standardContainer) {
+    const origHeight = standardContainer.style.height;
+    const origOpacity = standardContainer.style.opacity;
+    
+    standardContainer.style.height = "auto";
+    standardContainer.style.opacity = "1";
+    
+    standardContainerNaturalHeight = standardContainer.scrollHeight;
+    
+    standardContainer.style.height = origHeight;
+    standardContainer.style.opacity = origOpacity;
+  }
+}
 
 function resetScrollProgress() {
   scrollY = 0;
@@ -613,9 +636,7 @@ function applyScrollTransition(progress) {
 
   // Animate the standard container height to push/pull layout elements in real-time
   if (standardContainer) {
-    standardContainer.style.height = "auto";
-    const naturalHeight = standardContainer.scrollHeight;
-    standardContainer.style.height = `${progress * naturalHeight}px`;
+    standardContainer.style.height = `${progress * standardContainerNaturalHeight}px`;
     standardContainer.style.opacity = progress;
   }
 
