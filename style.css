@@ -316,3 +316,25 @@ body {
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
+
+/* Page content transitions for blur effects */
+#clock-container,
+#bookmarks-grid {
+  transition: filter 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* When settings panel is open, blur both clock and bookmarks */
+body:has(#settings-modal.show) #clock-container,
+body:has(#settings-modal.show) #bookmarks-grid {
+  filter: blur(12px);
+}
+
+/* Unblur Clock when hovering over the Clock settings section */
+body:has(#settings-modal.show .settings-section[data-section="clock"]:hover) #clock-container {
+  filter: blur(0);
+}
+
+/* Unblur Bookmarks when hovering over the Bookmarks settings section */
+body:has(#settings-modal.show .settings-section[data-section="bookmarks"]:hover) #bookmarks-grid {
+  filter: blur(0);
+}
