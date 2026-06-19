@@ -121,7 +121,37 @@ function renderBookmarks(bookmarks) {
     icon.appendChild(insideIcon);
     container.appendChild(icon);
   });
+  applyStaggeredRowAnimations();
 }
+
+function applyStaggeredRowAnimations() {
+  const icons = document.querySelectorAll(".bookmark-icon");
+  const rows = new Map();
+
+  // Group icons by their vertical position (offsetTop relative to parent grid)
+  icons.forEach((icon) => {
+    icon.style.animationDelay = ""; // Reset inline style
+    const top = icon.offsetTop;
+    if (!rows.has(top)) {
+      rows.set(top, []);
+    }
+    rows.get(top).push(icon);
+  });
+
+  // Sort rows vertically and apply staggered animation delay per row
+  const sortedTops = Array.from(rows.keys()).sort((a, b) => a - b);
+  sortedTops.forEach((top, rowIndex) => {
+    const rowIcons = rows.get(top);
+    const delay = 350 + rowIndex * 120; // 350ms delay for first row, +120ms for subsequent rows
+    rowIcons.forEach((icon) => {
+      icon.style.animationDelay = `${delay}ms`;
+    });
+  });
+}
+
+window.addEventListener("resize", () => {
+  applyStaggeredRowAnimations();
+});
 
 function loadFaviconWithFallbacks(img, url, cacheBuster = false) {
   const cb = cacheBuster ? `?cb=${Date.now()}` : "";
