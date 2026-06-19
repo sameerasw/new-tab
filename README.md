@@ -1,5 +1,8 @@
 # New Tab with bookmarks
 
+https://github.com/user-attachments/assets/57e0210c-0932-4122-b80e-2ff0ad43ac99
+
+
 A minimalistic, customizable new tab page extension for Chromium-based browsers. It displays your bookmarks in rows, supports setting your own CSS and allows Vimium C to inject itself for that tasty vim motion flow. 
 
 ## Features
