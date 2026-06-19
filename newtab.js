@@ -104,13 +104,19 @@ function renderBookmarks(bookmarks) {
   
   let renderedTopSites = false;
   let renderedDivider = false;
+  let standardContainer = null;
 
   limited.forEach((bm) => {
-    // If we transition from top sites to standard bookmarks/folders, add a line break
-    if (!bm.isTopSite && renderedTopSites && !renderedDivider) {
-      const gridBreak = document.createElement("div");
-      gridBreak.className = "grid-break";
-      container.appendChild(gridBreak);
+    // If we transition from top sites to standard bookmarks/folders, add a line break and container
+    if (!bm.isTopSite && !renderedDivider) {
+      if (renderedTopSites) {
+        const gridBreak = document.createElement("div");
+        gridBreak.className = "grid-break";
+        container.appendChild(gridBreak);
+      }
+      standardContainer = document.createElement("div");
+      standardContainer.id = "standard-bookmarks-container";
+      container.appendChild(standardContainer);
       renderedDivider = true;
     }
     if (bm.isTopSite) {
@@ -184,13 +190,23 @@ function renderBookmarks(bookmarks) {
       insideIcon.appendChild(img);
     }
     icon.appendChild(insideIcon);
-    container.appendChild(icon);
+    
+    if (bm.isTopSite) {
+      container.appendChild(icon);
+    } else {
+      if (standardContainer) {
+        standardContainer.appendChild(icon);
+      } else {
+        container.appendChild(icon);
+      }
+    }
   });
   applyStaggeredRowAnimations();
+  resetScrollProgress();
 }
 
 function applyStaggeredRowAnimations() {
-  const icons = document.querySelectorAll(".bookmark-icon");
+  const icons = document.querySelectorAll(".bookmark-icon.top-site");
   const rows = new Map();
 
   // Group icons by their vertical position (offsetTop relative to parent grid)
@@ -421,3 +437,67 @@ function toggleSettings() {
     }
   }
 }
+
+let scrollY = 0;
+const maxScroll = 120; // total scroll needed in pixels to fully show bookmarks
+
+function resetScrollProgress() {
+  scrollY = 0;
+  applyScrollTransition(0);
+}
+
+function applyScrollTransition(progress) {
+  const standardContainer = document.getElementById("standard-bookmarks-container");
+  const topSites = document.querySelectorAll(".bookmark-icon.top-site");
+  const items = document.querySelectorAll(".bookmark-icon:not(.top-site)");
+  const divider = document.querySelector(".grid-break");
+
+  if (divider) {
+    divider.style.opacity = progress;
+    divider.style.transform = `scaleX(${progress})`;
+    divider.style.transition = "opacity 0.15s ease, transform 0.15s ease";
+  }
+
+  // Animate the standard container height to push/pull layout elements in real-time
+  if (standardContainer) {
+    standardContainer.style.height = "auto";
+    const naturalHeight = standardContainer.scrollHeight;
+    standardContainer.style.height = `${progress * naturalHeight}px`;
+    standardContainer.style.opacity = progress;
+  }
+
+  // Slide top sites with a subtle spring
+  topSites.forEach((item) => {
+    const translateY = (1 - progress) * 15;
+    item.style.transform = `translateY(${translateY}px)`;
+  });
+
+  items.forEach((item) => {
+    // Fade in standard bookmark items and translate them slightly upwards inside the container
+    item.style.opacity = progress;
+    const translateY = (1 - progress) * 20; 
+    item.style.transform = `translateY(${translateY}px)`;
+
+    if (progress < 0.15) {
+      item.style.pointerEvents = "none";
+    } else {
+      item.style.pointerEvents = "auto";
+    }
+  });
+}
+
+// Global scroll event listener driving the transition
+window.addEventListener("wheel", (e) => {
+  const modal = document.getElementById("settings-modal");
+  // Ignore scrolling inside settings modal
+  if (modal && modal.classList.contains("show") && modal.contains(e.target)) {
+    return;
+  }
+
+  scrollY += e.deltaY;
+  if (scrollY < 0) scrollY = 0;
+  if (scrollY > maxScroll) scrollY = maxScroll;
+
+  const progress = scrollY / maxScroll;
+  applyScrollTransition(progress);
+}, { passive: false });
