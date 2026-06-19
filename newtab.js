@@ -672,6 +672,17 @@ function applyScrollTransition(progress) {
   const items = document.querySelectorAll(".bookmark-icon:not(.top-site)");
   const divider = document.querySelector(".grid-break");
 
+  // If user scrolls, disable entrance CSS animations to allow clean JS interpolation
+  if (progress > 0) {
+    topSites.forEach((item) => {
+      item.style.animation = "none";
+    });
+    const clockContainer = document.getElementById("clock-container");
+    if (clockContainer) {
+      clockContainer.style.animation = "none";
+    }
+  }
+
   if (divider) {
     divider.style.opacity = progress;
     divider.style.transform = `scaleX(${progress})`;
@@ -712,6 +723,7 @@ window.addEventListener("wheel", (e) => {
     return;
   }
 
+  e.preventDefault();
   scrollY += e.deltaY;
   if (scrollY < 0) scrollY = 0;
   if (scrollY > maxScroll) scrollY = maxScroll;
