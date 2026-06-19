@@ -672,10 +672,10 @@ function applyScrollTransition(progress) {
   const items = document.querySelectorAll(".bookmark-icon:not(.top-site)");
   const divider = document.querySelector(".grid-break");
 
-  // If user scrolls, disable entrance CSS animations to allow clean JS interpolation
   if (progress > 0) {
     topSites.forEach((item) => {
       item.style.animation = "none";
+      item.style.opacity = "1";
     });
     const clockContainer = document.getElementById("clock-container");
     if (clockContainer) {
