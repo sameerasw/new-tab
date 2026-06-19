@@ -107,7 +107,9 @@ body {
   height: var(--bookmark-button-size);
   margin: var(--bookmark-spacing);
   cursor: pointer;
-  background: var(--icon-bg);
+  background: var(--panel-bg);
+  backdrop-filter: blur(var(--panel-blur));
+  -webkit-backdrop-filter: blur(var(--panel-blur));
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -156,9 +158,7 @@ body {
   box-shadow: 0 6px 16px var(--shadow-color);
 }
 
-.bookmark-icon.top-site {
-  background: light-dark(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.16));
-}
+
 
 .bookmark-icon img {
   width: var(--bookmark-icon-size);
