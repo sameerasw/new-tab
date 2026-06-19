@@ -600,15 +600,13 @@ function applyBackground() {
     chrome.storage.local.get(["bingImageBase64"], (data) => {
       if (data.bingImageBase64) {
         bgImageEl.style.backgroundImage = `url(${data.bingImageBase64})`;
-        bgImageEl.style.display = "block";
+        bgImageEl.classList.add("show-image");
       } else {
-        bgImageEl.style.backgroundImage = "none";
-        bgImageEl.style.display = "none";
+        bgImageEl.classList.remove("show-image");
       }
     });
   } else {
-    bgImageEl.style.backgroundImage = "none";
-    bgImageEl.style.display = "none";
+    bgImageEl.classList.remove("show-image");
   }
 }
 

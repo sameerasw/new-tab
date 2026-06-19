@@ -405,18 +405,33 @@ body:has(#settings-modal.show .settings-section[data-section="bookmarks"]:hover)
   background-size: cover;
   background-position: center;
   z-index: -1;
-  opacity: var(--bg-opacity, 1);
-  filter: blur(var(--bg-blur, 0px));
+  opacity: 0;
   display: none;
   transition: filter 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+#bg-image.show-image {
+  display: block;
+  animation: bgFadeInZoom 2.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes bgFadeInZoom {
+  from {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+  to {
+    opacity: var(--bg-opacity, 1);
+    transform: scale(1);
+  }
+}
+
 /* Modal open state blurs the background image by an extra 12px */
 body:has(#settings-modal.show) #bg-image {
-  filter: blur(calc(var(--bg-blur, 0px) + 12px));
+  filter: blur(calc(var(--bg-blur, 0px) + 12px)) !important;
 }
 
 /* Hovering over the background settings section removes the extra 12px blur, showing only user-set blur */
 body:has(#settings-modal.show .settings-section[data-section="background"]:hover) #bg-image {
-  filter: blur(var(--bg-blur, 0px));
+  filter: blur(var(--bg-blur, 0px)) !important;
 }
