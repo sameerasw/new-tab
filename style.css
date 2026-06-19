@@ -1,10 +1,23 @@
+:root {
+    color-scheme: light dark;
+    --bg-color: light-dark(#ffffff, #222222);
+    --text-color: light-dark(#222222, #eeeeee);
+    --icon-bg: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.08));
+    --icon-hover-bg: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.18));
+    --shadow-color: light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
+    --panel-bg: light-dark(rgba(240, 240, 240, 0.95), rgba(30, 30, 30, 0.95));
+    --panel-border: light-dark(#cccccc, #444444);
+    --input-bg: light-dark(#ffffff, #181818);
+    --input-color: light-dark(#222222, #eeeeee);
+}
+
 body,
 html {
     min-height: 100vh;
     margin: 0;
     padding: 0;
-    background: #222;
-    color: #eee;
+    background: var(--bg-color);
+    color: var(--text-color);
     overflow: auto;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
@@ -61,14 +74,14 @@ body {
     height: 3.5rem;
     margin: 0.3rem;
     cursor: pointer;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--icon-bg);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     text-decoration: none;
     transition: background 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .bookmark-icon-inner {
@@ -80,9 +93,9 @@ body {
 }
 
 .bookmark-icon:hover {
-    background: rgba(255, 255, 255, 0.18);
+    background: var(--icon-hover-bg);
     transform: scale(1.1);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 16px var(--shadow-color);
 }
 
 .bookmark-icon img {
@@ -99,11 +112,13 @@ body {
     left: 50%;
     transform: translateX(-50%);
     z-index: 2;
-    background: rgba(30, 30, 30, 0.95);
+    background: var(--panel-bg);
+    color: var(--text-color);
     padding: 0.75rem 1.5rem;
     border-radius: 0.625rem;
     margin-top: 0.5rem;
-    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0.125rem 0.5rem var(--shadow-color);
+    border: 1px solid var(--panel-border);
 }
 
 #controls label,
@@ -116,9 +131,9 @@ body {
     min-width: 18.75rem;
     max-width: 37.5rem;
     font-family: monospace;
-    background: #181818;
-    color: #eee;
-    border: 1px solid #444;
+    background: var(--input-bg);
+    color: var(--input-color);
+    border: 1px solid var(--panel-border);
     border-radius: 0.25rem;
     margin-bottom: 0.5rem;
 }
