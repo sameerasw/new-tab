@@ -24,11 +24,32 @@
       </div>
     </div>
     <div id="settings-modal">
+      <h3>Settings</h3>
       <div class="settings-content">
-        <h3>Settings</h3>
-        
         <div class="settings-section" data-section="clock">
           <div class="settings-section-title">Clock</div>
+          <div class="setting-item">
+            <label>Format</label>
+            <div class="segmented-control" data-setting="clockFormat">
+              <button class="segment-btn active" data-value="12h">12h</button>
+              <button class="segment-btn" data-value="24h">24h</button>
+            </div>
+          </div>
+          <div class="setting-item" id="setting-item-leading-zero">
+            <label for="axis-clock-leadingzero">Leading 0</label>
+            <label class="switch">
+              <input type="checkbox" id="axis-clock-leadingzero" checked>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <label>Separator</label>
+            <div class="segmented-control" data-setting="clockSeparator">
+              <button class="segment-btn active" data-value=":">:</button>
+              <button class="segment-btn" data-value=".">.</button>
+              <button class="segment-btn" data-value=" ">[space]</button>
+            </div>
+          </div>
           <div class="setting-item">
             <label for="axis-weight">Weight</label>
             <input type="range" id="axis-weight" min="100" max="1000" value="300">
@@ -66,6 +87,10 @@
         <div class="settings-section" data-section="bookmarks">
           <div class="settings-section-title">Bookmarks</div>
           <div class="setting-item">
+            <label for="axis-bm-limit">Limit</label>
+            <input type="number" id="axis-bm-limit" min="5" max="1000" value="100">
+          </div>
+          <div class="setting-item">
             <label for="axis-bm-width">Max Width</label>
             <input type="range" id="axis-bm-width" min="30" max="100" value="80">
             <div class="m3-slider" data-input="axis-bm-width">
@@ -89,10 +114,12 @@
               <div class="m3-slider-thumb"></div>
             </div>
           </div>
-
           <div class="setting-item">
             <label for="axis-bm-showrecents">Show Recents</label>
-            <input type="checkbox" id="axis-bm-showrecents" checked>
+            <label class="switch">
+              <input type="checkbox" id="axis-bm-showrecents" checked>
+              <span class="switch-slider"></span>
+            </label>
           </div>
           <div class="setting-item">
             <label for="axis-bm-topsites" id="label-bm-topsites">Recent Sites</label>
@@ -115,19 +142,19 @@
         <div class="settings-section" data-section="background">
           <div class="settings-section-title">Background</div>
           <div class="setting-item">
-            <label for="axis-bg-source">Source</label>
-            <select id="axis-bg-source">
-              <option value="default">Default</option>
-              <option value="bing">Bing</option>
-            </select>
+            <label>Source</label>
+            <div class="segmented-control" data-setting="backgroundSource">
+              <button class="segment-btn active" data-value="default">Default</button>
+              <button class="segment-btn" data-value="bing">Bing</button>
+            </div>
           </div>
           <div class="bing-only">
             <div class="setting-item">
-              <label for="axis-bg-resolution">Resolution</label>
-              <select id="axis-bg-resolution">
-                <option value="1920x1080">Native</option>
-                <option value="UHD">Max</option>
-              </select>
+              <label>Resolution</label>
+              <div class="segmented-control" data-setting="bingResolution">
+                <button class="segment-btn active" data-value="1920x1080">Native</button>
+                <button class="segment-btn" data-value="UHD">Max</button>
+              </div>
             </div>
             <div class="setting-item">
               <label for="axis-bg-opacity">Opacity</label>

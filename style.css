@@ -213,10 +213,13 @@ body {
   color: var(--text-color);
   border: 1px solid var(--panel-border);
   border-radius: 16px;
-  padding: 0.6rem;
-  width: 280px;
-  max-height: 80vh;
-  overflow-y: auto;
+  padding: 0.8rem;
+  width: 300px;
+  max-width: 95vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   z-index: 10;
   box-shadow: 0 12px 32px var(--shadow-color);
   
@@ -242,21 +245,44 @@ body {
 .settings-content {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  max-height: calc(85vh - 3.5rem);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-.settings-content h3 {
-  margin: 0.2rem 0.4rem 0 0.4rem;
+/* Custom premium scrollbar for vertical settings */
+.settings-content::-webkit-scrollbar {
+  width: 6px;
+}
+.settings-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.settings-content::-webkit-scrollbar-thumb {
+  background: var(--icon-bg);
+  border-radius: 3px;
+}
+.settings-content::-webkit-scrollbar-thumb:hover {
+  background: var(--icon-hover-bg);
+}
+
+#settings-modal h3 {
+  margin: 0.2rem 0.4rem 0.8rem 0.4rem;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 600;
   color: var(--text-color);
 }
 
 .settings-section {
+  break-inside: avoid;
   background: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.05));
   border-radius: 12px;
   padding: 0.8rem 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.settings-section:last-child {
+  margin-bottom: 0;
 }
 
 .settings-section-title {
@@ -281,23 +307,100 @@ body {
   margin-bottom: 0;
 }
 
-.setting-item label {
-  flex: 0 0 95px;
+.setting-item label:not(.switch) {
+  flex: 1 1 auto;
   font-size: 0.85rem;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   opacity: 0.9;
 }
 
-.setting-item input[type="checkbox"] {
-  cursor: pointer;
-  accent-color: var(--text-color);
-  width: 1.1rem;
-  height: 1.1rem;
-  margin: 0;
-  outline: none;
+/* Custom modern toggle switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 32px;
+  height: 18px;
+  flex: 0 0 auto;
 }
 
-.setting-item select {
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--icon-bg);
+  transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 18px;
+  border: 1px solid var(--panel-border);
+}
+
+.switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 12px;
+  width: 12px;
+  left: 2px;
+  bottom: 2px;
+  background-color: var(--text-color);
+  transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 50%;
+}
+
+.switch input:checked + .switch-slider {
+  background-color: var(--text-color);
+  border-color: var(--text-color);
+}
+
+.switch input:checked + .switch-slider:before {
+  transform: translateX(16px);
+  background-color: var(--bg-color);
+}
+
+/* Segmented button control styling */
+.segmented-control {
+  display: flex;
+  background: var(--icon-bg);
+  border-radius: 18px;
+  padding: 2px;
+  gap: 2px;
+  align-items: center;
+  border: 1px solid var(--panel-border);
+  flex-shrink: 0;
+}
+
+.segment-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  padding: 0.25rem 0.4rem;
+  font-size: 0.8rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 500;
+  border-radius: 16px;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.18s, color 0.18s;
+  white-space: nowrap;
+  min-width: 60px;
+  text-align: center;
+  flex: 1 1 auto;
+}
+
+.segment-btn.active {
+  background: var(--text-color);
+  color: var(--bg-color);
+}
+
+/* Number input styling */
+.setting-item input[type="number"] {
   background: var(--input-bg);
   color: var(--input-color);
   border: 1px solid var(--panel-border);
@@ -305,9 +408,9 @@ body {
   padding: 0.2rem 0.4rem;
   font-size: 0.85rem;
   outline: none;
-  cursor: pointer;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  max-width: 120px;
+  width: 60px;
+  text-align: center;
 }
 
 .settings-section:not(.bing-active) .bing-only {
@@ -319,7 +422,8 @@ body {
 }
 
 .m3-slider {
-  flex-grow: 1;
+  flex-grow: 0;
+  width: 140px;
   position: relative;
   height: 32px;
   display: flex;

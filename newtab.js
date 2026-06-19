@@ -23,7 +23,10 @@ let settings = {
   backgroundSource: "default",
   bingResolution: "1920x1080",
   bgOpacity: 100,
-  bgBlur: 0
+  bgBlur: 0,
+  clockFormat: "12h",
+  clockLeadingZero: true,
+  clockSeparator: ":"
 };
 
 // Load settings from storage
@@ -329,12 +332,22 @@ function updateClock() {
   let hours = now.getHours();
   const minutes = String(now.getMinutes()).padStart(2, "0");
 
-  // 12h format with leading 0
-  hours = hours % 12;
-  hours = hours ? hours : 12; // 0 becomes 12
-  const hoursStr = String(hours).padStart(2, "0");
+  let hoursStr;
+  if (settings.clockFormat === "24h") {
+    hoursStr = String(hours).padStart(2, "0");
+  } else {
+    // 12h
+    hours = hours % 12;
+    hours = hours ? hours : 12; // 0 becomes 12
+    if (settings.clockLeadingZero) {
+      hoursStr = String(hours).padStart(2, "0");
+    } else {
+      hoursStr = String(hours);
+    }
+  }
 
-  clockElement.textContent = `${hoursStr}:${minutes}`;
+  const separator = settings.clockSeparator !== undefined ? settings.clockSeparator : ":";
+  clockElement.textContent = `${hoursStr}${separator}${minutes}`;
 }
 setInterval(updateClock, 1000);
 updateClock();
@@ -439,15 +452,33 @@ function applyClockSettings() {
     labelTopsites.textContent = settings.showRecents ? "Recent Sites" : "Top Bookmarks";
   }
 
-  // Update Background source and resolution pickers
-  const bgSourceSelect = document.getElementById("axis-bg-source");
-  if (bgSourceSelect) {
-    bgSourceSelect.value = settings.backgroundSource ?? "default";
+  // Update Segmented Controls active buttons
+  document.querySelectorAll(".segmented-control").forEach((ctrl) => {
+    const settingKey = ctrl.dataset.setting;
+    const value = settings[settingKey];
+    if (value !== undefined) {
+      ctrl.querySelectorAll(".segment-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.value === value);
+      });
+    }
+  });
+
+  // Update Leading Zero element visibility based on clockFormat
+  const leadingZeroItem = document.getElementById("setting-item-leading-zero");
+  if (leadingZeroItem) {
+    leadingZeroItem.style.display = settings.clockFormat === "12h" ? "flex" : "none";
   }
-  const bgResSelect = document.getElementById("axis-bg-resolution");
-  if (bgResSelect) {
-    bgResSelect.value = settings.bingResolution ?? "1920x1080";
+  const leadingZeroCheckbox = document.getElementById("axis-clock-leadingzero");
+  if (leadingZeroCheckbox) {
+    leadingZeroCheckbox.checked = settings.clockLeadingZero ?? true;
   }
+
+  // Update Bookmarks Limit input
+  const bmLimitInput = document.getElementById("axis-bm-limit");
+  if (bmLimitInput) {
+    bmLimitInput.value = settings.maxEntries ?? 100;
+  }
+
   const bgSection = document.querySelector('.settings-section[data-section="background"]');
   if (bgSection) {
     bgSection.classList.toggle("bing-active", settings.backgroundSource === "bing");
@@ -489,28 +520,60 @@ function initSettingsUI() {
     });
   }
 
-  const bgSourceSelect = document.getElementById("axis-bg-source");
-  if (bgSourceSelect) {
-    bgSourceSelect.addEventListener("change", (e) => {
-      const val = e.target.value;
-      settings.backgroundSource = val;
-      chrome.storage.local.set({ backgroundSource: val });
-      applyClockSettings();
-      applyBackground();
-      updateBingImageIfNeeded();
+  const leadingZeroCheckbox = document.getElementById("axis-clock-leadingzero");
+  if (leadingZeroCheckbox) {
+    leadingZeroCheckbox.addEventListener("change", (e) => {
+      const checked = e.target.checked;
+      settings.clockLeadingZero = checked;
+      chrome.storage.local.set({ clockLeadingZero: checked });
+      updateClock();
     });
   }
 
-  const bgResSelect = document.getElementById("axis-bg-resolution");
-  if (bgResSelect) {
-    bgResSelect.addEventListener("change", (e) => {
-      const val = e.target.value;
-      settings.bingResolution = val;
-      chrome.storage.local.set({ bingResolution: val });
-      applyClockSettings();
-      updateBingImageIfNeeded();
+  const bmLimitInput = document.getElementById("axis-bm-limit");
+  if (bmLimitInput) {
+    bmLimitInput.addEventListener("change", (e) => {
+      let val = parseInt(e.target.value, 10);
+      if (isNaN(val) || val < 5) {
+        val = 5;
+        e.target.value = 5;
+      }
+      settings.maxEntries = val;
+      chrome.storage.local.set({ maxEntries: val });
+      loadAndRenderBookmarks();
     });
   }
+
+  // Wire up segmented controls
+  document.querySelectorAll(".segmented-control").forEach((ctrl) => {
+    const settingKey = ctrl.dataset.setting;
+    ctrl.addEventListener("click", (e) => {
+      const btn = e.target.closest(".segment-btn");
+      if (!btn) return;
+      
+      const value = btn.dataset.value;
+      settings[settingKey] = value;
+      chrome.storage.local.set({ [settingKey]: value });
+      
+      // Update active classes on buttons
+      ctrl.querySelectorAll(".segment-btn").forEach((b) => {
+        b.classList.toggle("active", b === btn);
+      });
+      
+      // Trigger updates
+      if (settingKey === "clockFormat" || settingKey === "clockSeparator") {
+        applyClockSettings();
+        updateClock();
+      } else if (settingKey === "backgroundSource") {
+        applyClockSettings();
+        applyBackground();
+        updateBingImageIfNeeded();
+      } else if (settingKey === "bingResolution") {
+        applyClockSettings();
+        updateBingImageIfNeeded();
+      }
+    });
+  });
 
   SLIDER_MAP.forEach(({ sliderId, settingKey }) => {
     const input = document.getElementById(sliderId);
@@ -655,4 +718,27 @@ function fetchAndCacheBingImage(resolution) {
       }
     })
     .catch((err) => console.error("Error fetching Bing Image of the Day metadata:", err));
+}
+
+// Register browser context menu to open settings
+if (typeof chrome !== "undefined" && chrome.contextMenus && chrome.contextMenus.create) {
+  chrome.contextMenus.removeAll(() => {
+    chrome.contextMenus.create({
+      id: "open-settings",
+      title: "Settings (Ctrl+,)",
+      contexts: ["page"]
+    });
+  });
+}
+
+if (typeof chrome !== "undefined" && chrome.contextMenus && chrome.contextMenus.onClicked) {
+  chrome.contextMenus.onClicked.addListener((info, tab) => {
+    if (info.menuItemId === "open-settings" && typeof chrome.tabs !== "undefined" && chrome.tabs.getCurrent) {
+      chrome.tabs.getCurrent((currentTab) => {
+        if (currentTab && tab && currentTab.id === tab.id) {
+          toggleSettings();
+        }
+      });
+    }
+  });
 }

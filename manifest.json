@@ -10,7 +10,8 @@
     "bookmarks",
     "storage",
     "topSites",
-    "https://www.bing.com/"
+    "https://www.bing.com/",
+    "contextMenus"
   ],
   "icons": {
     "16": "icon16.png",
