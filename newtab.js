@@ -18,7 +18,8 @@ let settings = {
   bookmarkButtonSize: 56,
   bookmarkIconSize: 28,
   bookmarkSpacing: 5,
-  topSitesCount: 5
+  topSitesCount: 5,
+  showRecents: true
 };
 
 // Load settings from storage
@@ -52,46 +53,60 @@ function loadAndRenderBookmarks() {
     // Sort by index (same as bookmark manager)
     nodes.sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
 
-    if (typeof chrome !== "undefined" && chrome.topSites && chrome.topSites.get) {
-      chrome.topSites.get((mostVisited) => {
-        const count = settings.topSitesCount ?? 5;
-        const topToShow = (mostVisited || []).slice(0, count);
+    if (settings.showRecents) {
+      if (typeof chrome !== "undefined" && chrome.topSites && chrome.topSites.get) {
+        chrome.topSites.get((mostVisited) => {
+          const count = settings.topSitesCount ?? 5;
+          const topToShow = (mostVisited || []).slice(0, count);
 
-        // Normalize function to match urls
-        const normalizeUrl = (url) => {
-          try {
-            const u = new URL(url);
-            let host = u.hostname.toLowerCase();
-            if (host.startsWith("www.")) host = host.substring(4);
-            let path = u.pathname.toLowerCase();
-            if (path.endsWith("/")) path = path.slice(0, -1);
-            return host + path + u.search.toLowerCase();
-          } catch (e) {
-            return url.toLowerCase();
-          }
-        };
+          // Normalize function to match urls
+          const normalizeUrl = (url) => {
+            try {
+              const u = new URL(url);
+              let host = u.hostname.toLowerCase();
+              if (host.startsWith("www.")) host = host.substring(4);
+              let path = u.pathname.toLowerCase();
+              if (path.endsWith("/")) path = path.slice(0, -1);
+              return host + path + u.search.toLowerCase();
+            } catch (e) {
+              return url.toLowerCase();
+            }
+          };
 
-        const topUrls = new Set(topToShow.map((site) => normalizeUrl(site.url)));
+          const topUrls = new Set(topToShow.map((site) => normalizeUrl(site.url)));
 
-        // Filter out bookmarks that are already showing in Top/Recent Sites
-        const filteredBookmarks = nodes.filter((bm) => {
-          if (!bm.url) return true; // Keep folders
-          return !topUrls.has(normalizeUrl(bm.url));
+          // Filter out bookmarks that are already showing in Top/Recent Sites
+          const filteredBookmarks = nodes.filter((bm) => {
+            if (!bm.url) return true; // Keep folders
+            return !topUrls.has(normalizeUrl(bm.url));
+          });
+
+          // Map top sites to matching structure
+          const topItems = topToShow.map((site) => ({
+            title: site.title,
+            url: site.url,
+            isTopSite: true
+          }));
+
+          // Combine them (recents first, then remaining bookmarks)
+          const combined = [...topItems, ...filteredBookmarks];
+          renderBookmarks(combined);
         });
-
-        // Map top sites to matching structure
-        const topItems = topToShow.map((site) => ({
-          title: site.title,
-          url: site.url,
-          isTopSite: true
-        }));
-
-        // Combine them (recents first, then remaining bookmarks)
-        const combined = [...topItems, ...filteredBookmarks];
-        renderBookmarks(combined);
-      });
+      } else {
+        renderBookmarks(nodes);
+      }
     } else {
-      renderBookmarks(nodes);
+      // Pick top N selected bookmarks from the folder instead of recents
+      const count = settings.topSitesCount ?? 5;
+      
+      const topItems = nodes.slice(0, count).map((bm) => ({
+        ...bm,
+        isTopSite: true
+      }));
+      
+      const remainingBookmarks = nodes.slice(count);
+      const combined = [...topItems, ...remainingBookmarks];
+      renderBookmarks(combined);
     }
   });
 }
@@ -402,6 +417,16 @@ function applyClockSettings() {
   root.style.setProperty("--bookmark-icon-size", `${(settings.bookmarkIconSize ?? 28) / 16}rem`);
   root.style.setProperty("--bookmark-spacing", `${(settings.bookmarkSpacing ?? 5) / 16}rem`);
 
+  // Update Show Recents UI elements
+  const recentsCheckbox = document.getElementById("axis-bm-showrecents");
+  if (recentsCheckbox) {
+    recentsCheckbox.checked = settings.showRecents ?? true;
+  }
+  const labelTopsites = document.getElementById("label-bm-topsites");
+  if (labelTopsites) {
+    labelTopsites.textContent = settings.showRecents ? "Recent Sites" : "Top Bookmarks";
+  }
+
   SLIDER_MAP.forEach(({ sliderId, settingKey, default: def }) => {
     const input = document.getElementById(sliderId);
     if (input) {
@@ -421,6 +446,22 @@ function initSettingsUI() {
       }
     }
   });
+
+  const recentsCheckbox = document.getElementById("axis-bm-showrecents");
+  if (recentsCheckbox) {
+    recentsCheckbox.addEventListener("change", (e) => {
+      const checked = e.target.checked;
+      settings.showRecents = checked;
+      chrome.storage.local.set({ showRecents: checked });
+      
+      const labelTopsites = document.getElementById("label-bm-topsites");
+      if (labelTopsites) {
+        labelTopsites.textContent = checked ? "Recent Sites" : "Top Bookmarks";
+      }
+      
+      loadAndRenderBookmarks();
+    });
+  }
 
   SLIDER_MAP.forEach(({ sliderId, settingKey }) => {
     const input = document.getElementById(sliderId);

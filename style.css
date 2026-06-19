@@ -288,6 +288,15 @@ body {
   opacity: 0.9;
 }
 
+.setting-item input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: var(--text-color);
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+  outline: none;
+}
+
 .setting-item input[type="range"] {
   display: none;
 }
