@@ -1,28 +1,20 @@
-/* Basic styles for new tab extension */
 body,
 html {
-    min-height: 100%;
+    min-height: 100vh;
     margin: 0;
     padding: 0;
-    /* font-family: sans-serif; */
     background: #222;
     color: #eee;
     overflow: auto;
-    /* Enable scrolling on the body */
-
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 body {
-    /* there is some weird injected css that sets the font size to 75% so I am intentionally setting it 100% here */
     font-size: 100%;
 }
 
 #background {
     position: fixed;
-    /* top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0; */
     z-index: 0;
     background-size: cover;
     background-position: center;
@@ -31,9 +23,7 @@ body {
     max-width: 100vw;
     height: 100%;
     width: 100%;
-    /* background-color: black; */
     overflow-y: auto;
-    /* overflow-x: hidden; */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -41,78 +31,65 @@ body {
 
 #bookmarks-container {
     z-index: 1;
-    /* Prevent the top from going above the viewport */
     max-height: 100vh;
     max-width: 100vw;
-    overflow-y: visible;
+    overflow-y: auto;
+    display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    /* padding: auto; */
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    box-sizing: border-box;
 }
 
 #bookmarks-grid {
     display: flex;
-    flex-direction: column;
-    /* flex-wrap: wrap; */
+    flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
+    max-width: 80vw;
     width: 100%;
+    margin: 0 auto;
 }
 
 .bookmark-row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 0.01rem 0;
+    display: none;
 }
 
 .bookmark-icon {
-    width: 6rem;
-    height: 6rem;
-    margin: 0.1rem 0.1rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    margin: 0.3rem;
     cursor: pointer;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 0.5rem;
-    /* transition: background 0.2s; */
-    padding: 1rem;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     text-decoration: none;
+    transition: background 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .bookmark-icon-inner {
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    text-align: center;
-    /* margin-top: auto; */
-    top: 0.3rem;
-    position: relative;
-    /* min-height: 5rem; */
+    width: 100%;
+    height: 100%;
 }
 
 .bookmark-icon:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.18);
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
 .bookmark-icon img {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    object-fit: contain;
     display: block;
-    margin-bottom: 0.25rem;
-}
-
-.bookmark-icon span {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: normal;
-    max-width: 6rem;
-    font-size: 0.9rem;
-    text-align: center;
-    color: #cccccc;
-    /* line-height: 1.2rem; */
-    /* min-height: 2.4em; */
 }
 
 #controls,
