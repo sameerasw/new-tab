@@ -113,15 +113,8 @@ function renderBookmarks(bookmarks) {
             icon.href = bm.url;
             icon.target = '_self';
             const img = document.createElement('img');
-
-            // Use Google's favicon service
-            img.src = `https://t3.gstatic.com/faviconV2?client=chrome&size=32&url=${encodeURIComponent(bm.url)}`;
             img.alt = '';
-            // If favicon fails, use default_url.svg
-            img.onerror = function () {
-                img.onerror = null;
-                img.src = 'default_url.svg';
-            };
+            loadFaviconWithFallbacks(img, bm.url);
             insideIcon.appendChild(img);
         }
         icon.appendChild(insideIcon);
@@ -129,5 +122,59 @@ function renderBookmarks(bookmarks) {
     });
 }
 
+function loadFaviconWithFallbacks(img, url, cacheBuster = false) {
+    const cb = cacheBuster ? `?cb=${Date.now()}` : '';
+    let hostname = '';
+    try {
+        hostname = new URL(url).hostname;
+    } catch (e) {}
+
+    // Fallback list:
+    // 1. Chrome's native local favicon cache (32px / 64px)
+    // 2. Classic Google s2 service (32px)
+    // 3. DuckDuckGo favicon service
+    const fallbacks = [
+        `chrome://favicon/size/64/${url}`,
+        `chrome://favicon/${url}`,
+        `https://www.google.com/s2/favicons?sz=32&domain_url=${encodeURIComponent(url)}`,
+        hostname ? `https://icons.duckduckgo.com/ip3/${hostname}.ico` : null
+    ].filter(Boolean);
+
+    let index = 0;
+
+    function tryNext() {
+        if (index < fallbacks.length) {
+            const nextSrc = fallbacks[index++];
+            img.src = nextSrc;
+        } else {
+            img.onerror = null;
+            img.src = 'default_url.svg';
+        }
+    }
+
+    img.onerror = tryNext;
+    tryNext();
+}
+
 // Initial load
 loadSettings();
+
+// Keyboard shortcut Ctrl+Shift+R (or Cmd+Shift+R) to refetch missing favicons
+window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'r') {
+        e.preventDefault();
+        refetchFavicons();
+    }
+});
+
+function refetchFavicons() {
+    const images = document.querySelectorAll('.bookmark-icon img');
+    images.forEach(img => {
+        if (img.src.includes('default_url.svg')) {
+            const anchor = img.closest('.bookmark-icon');
+            if (anchor && anchor.href && !anchor.href.startsWith('#') && !anchor.href.startsWith('chrome://') && !anchor.href.startsWith('file:///')) {
+                loadFaviconWithFallbacks(img, anchor.href, true);
+            }
+        }
+    });
+}
