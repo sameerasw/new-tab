@@ -17,7 +17,8 @@ let settings = {
   bookmarkMaxWidth: 80,
   bookmarkButtonSize: 56,
   bookmarkIconSize: 28,
-  bookmarkSpacing: 5
+  bookmarkSpacing: 5,
+  topSitesCount: 5
 };
 
 // Load settings from storage
@@ -50,7 +51,48 @@ function loadAndRenderBookmarks() {
   chrome.bookmarks.getChildren(settings.folderId, (nodes) => {
     // Sort by index (same as bookmark manager)
     nodes.sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
-    renderBookmarks(nodes);
+
+    if (typeof chrome !== "undefined" && chrome.topSites && chrome.topSites.get) {
+      chrome.topSites.get((mostVisited) => {
+        const count = settings.topSitesCount ?? 5;
+        const topToShow = (mostVisited || []).slice(0, count);
+
+        // Normalize function to match urls
+        const normalizeUrl = (url) => {
+          try {
+            const u = new URL(url);
+            let host = u.hostname.toLowerCase();
+            if (host.startsWith("www.")) host = host.substring(4);
+            let path = u.pathname.toLowerCase();
+            if (path.endsWith("/")) path = path.slice(0, -1);
+            return host + path + u.search.toLowerCase();
+          } catch (e) {
+            return url.toLowerCase();
+          }
+        };
+
+        const topUrls = new Set(topToShow.map((site) => normalizeUrl(site.url)));
+
+        // Filter out bookmarks that are already showing in Top/Recent Sites
+        const filteredBookmarks = nodes.filter((bm) => {
+          if (!bm.url) return true; // Keep folders
+          return !topUrls.has(normalizeUrl(bm.url));
+        });
+
+        // Map top sites to matching structure
+        const topItems = topToShow.map((site) => ({
+          title: site.title,
+          url: site.url,
+          isTopSite: true
+        }));
+
+        // Combine them (recents first, then remaining bookmarks)
+        const combined = [...topItems, ...filteredBookmarks];
+        renderBookmarks(combined);
+      });
+    } else {
+      renderBookmarks(nodes);
+    }
   });
 }
 
@@ -59,9 +101,27 @@ function renderBookmarks(bookmarks) {
   container.innerHTML = "";
   const maxEntries = settings.maxEntries || 100;
   const limited = bookmarks.slice(0, maxEntries);
+  
+  let renderedTopSites = false;
+  let renderedDivider = false;
+
   limited.forEach((bm) => {
+    // If we transition from top sites to standard bookmarks/folders, add a line break
+    if (!bm.isTopSite && renderedTopSites && !renderedDivider) {
+      const gridBreak = document.createElement("div");
+      gridBreak.className = "grid-break";
+      container.appendChild(gridBreak);
+      renderedDivider = true;
+    }
+    if (bm.isTopSite) {
+      renderedTopSites = true;
+    }
+
     const icon = document.createElement("a");
     icon.className = "bookmark-icon";
+    if (bm.isTopSite) {
+      icon.classList.add("top-site");
+    }
     // Always set the title to the bookmark/folder text (not URL)
     icon.title = bm.title || (bm.url ? "" : "Folder");
     // Bookmark folder
@@ -250,7 +310,8 @@ const SLIDER_MAP = [
   { sliderId: "axis-bm-width", settingKey: "bookmarkMaxWidth", default: 80 },
   { sliderId: "axis-bm-btnsize", settingKey: "bookmarkButtonSize", default: 56 },
   { sliderId: "axis-bm-iconsize", settingKey: "bookmarkIconSize", default: 28 },
-  { sliderId: "axis-bm-spacing", settingKey: "bookmarkSpacing", default: 5 }
+  { sliderId: "axis-bm-spacing", settingKey: "bookmarkSpacing", default: 5 },
+  { sliderId: "axis-bm-topsites", settingKey: "topSitesCount", default: 5 }
 ];
 
 function updateCustomSlider(inputEl) {
@@ -286,6 +347,9 @@ function initCustomSlider(inputEl, settingKey) {
     settings[settingKey] = val;
     chrome.storage.local.set({ [settingKey]: val });
     applyClockSettings();
+    if (settingKey === "topSitesCount") {
+      loadAndRenderBookmarks();
+    }
   };
 
   const onUp = () => {

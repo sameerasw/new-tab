@@ -147,6 +147,10 @@ body {
   box-shadow: 0 6px 16px var(--shadow-color);
 }
 
+.bookmark-icon.top-site {
+  background: light-dark(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.16));
+}
+
 .bookmark-icon img {
   width: var(--bookmark-icon-size);
   height: var(--bookmark-icon-size);
@@ -337,4 +341,11 @@ body:has(#settings-modal.show .settings-section[data-section="clock"]:hover) #cl
 /* Unblur Bookmarks when hovering over the Bookmarks settings section */
 body:has(#settings-modal.show .settings-section[data-section="bookmarks"]:hover) #bookmarks-grid {
   filter: blur(0);
+}
+
+.grid-break {
+  flex-basis: 100%;
+  width: 100%;
+  height: 0;
+  margin: 0.4rem 0;
 }
