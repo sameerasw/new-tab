@@ -12,7 +12,8 @@ let settings = {
   maxEntries: 100,
   clockWeight: 300,
   clockWidth: 100,
-  clockRound: 0
+  clockRound: 0,
+  clockSize: 55
 };
 
 // Load settings from storage
@@ -237,28 +238,87 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
+const SLIDER_MAP = [
+  { sliderId: "axis-weight", settingKey: "clockWeight", default: 300 },
+  { sliderId: "axis-width",  settingKey: "clockWidth",  default: 100 },
+  { sliderId: "axis-round",  settingKey: "clockRound",  default: 0   },
+  { sliderId: "axis-size",   settingKey: "clockSize",   default: 55  },
+];
+
+function updateCustomSlider(inputEl) {
+  const slider = inputEl.parentElement.querySelector(".m3-slider");
+  if (!slider) return;
+  const fill  = slider.querySelector(".m3-slider-fill");
+  const thumb = slider.querySelector(".m3-slider-thumb");
+  const min   = parseFloat(inputEl.min);
+  const max   = parseFloat(inputEl.max);
+  const val   = parseFloat(inputEl.value);
+  const pct   = ((val - min) / (max - min)) * 100;
+  fill.style.width  = `${pct}%`;
+  thumb.style.left  = `${pct}%`;
+}
+
+function initCustomSlider(inputEl, settingKey) {
+  const slider = inputEl.parentElement.querySelector(".m3-slider");
+  if (!slider) return;
+
+  const getValueFromEvent = (e) => {
+    const rect = slider.getBoundingClientRect();
+    const x    = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const pct  = Math.max(0, Math.min(1, x / rect.width));
+    const min  = parseFloat(inputEl.min);
+    const max  = parseFloat(inputEl.max);
+    return Math.round(min + pct * (max - min));
+  };
+
+  const onMove = (e) => {
+    const val = getValueFromEvent(e);
+    inputEl.value = val;
+    updateCustomSlider(inputEl);
+    settings[settingKey] = val;
+    chrome.storage.local.set({ [settingKey]: val });
+    applyClockSettings();
+  };
+
+  const onUp = () => {
+    window.removeEventListener("mousemove", onMove);
+    window.removeEventListener("mouseup",   onUp);
+    window.removeEventListener("touchmove", onMove);
+    window.removeEventListener("touchend",  onUp);
+  };
+
+  slider.addEventListener("mousedown", (e) => {
+    onMove(e);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup",   onUp);
+  });
+  slider.addEventListener("touchstart", (e) => {
+    onMove(e);
+    window.addEventListener("touchmove", onMove);
+    window.addEventListener("touchend",  onUp);
+  }, { passive: true });
+}
+
 function applyClockSettings() {
   const clock = document.getElementById("clock");
   if (!clock) return;
 
   clock.style.fontWeight = settings.clockWeight ?? 300;
   clock.style.fontVariationSettings = `"slnt" 0, "wdth" ${settings.clockWidth ?? 100}, "GRAD" 0, "ROND" ${settings.clockRound ?? 0}`;
+  clock.style.fontSize = `${(settings.clockSize ?? 55) / 10}rem`;
 
-  // Update inputs
-  const wInput = document.getElementById("axis-weight");
-  if (wInput) wInput.value = settings.clockWeight ?? 300;
-
-  const wdInput = document.getElementById("axis-width");
-  if (wdInput) wdInput.value = settings.clockWidth ?? 100;
-
-  const rInput = document.getElementById("axis-round");
-  if (rInput) rInput.value = settings.clockRound ?? 0;
+  SLIDER_MAP.forEach(({ sliderId, settingKey, default: def }) => {
+    const input = document.getElementById(sliderId);
+    if (input) {
+      input.value = settings[settingKey] ?? def;
+      updateCustomSlider(input);
+    }
+  });
 }
 
 function initSettingsUI() {
   const modal = document.getElementById("settings-modal");
 
-  // Close the settings modal when clicking outside of it
   document.addEventListener("click", (e) => {
     if (modal && modal.classList.contains("show")) {
       if (!modal.contains(e.target)) {
@@ -267,31 +327,10 @@ function initSettingsUI() {
     }
   });
 
-  const wInput = document.getElementById("axis-weight");
-  const wdInput = document.getElementById("axis-width");
-  const rInput = document.getElementById("axis-round");
-
-  const updateSetting = (key, val) => {
-    settings[key] = val;
-    chrome.storage.local.set({ [key]: val });
-    applyClockSettings();
-  };
-
-  if (wInput) {
-    wInput.addEventListener("input", (e) => {
-      updateSetting("clockWeight", parseInt(e.target.value));
-    });
-  }
-  if (wdInput) {
-    wdInput.addEventListener("input", (e) => {
-      updateSetting("clockWidth", parseInt(e.target.value));
-    });
-  }
-  if (rInput) {
-    rInput.addEventListener("input", (e) => {
-      updateSetting("clockRound", parseInt(e.target.value));
-    });
-  }
+  SLIDER_MAP.forEach(({ sliderId, settingKey }) => {
+    const input = document.getElementById(sliderId);
+    if (input) initCustomSlider(input, settingKey);
+  });
 }
 
 function toggleSettings() {

@@ -227,8 +227,43 @@ body {
 }
 
 .setting-item input[type="range"] {
+  display: none;
+}
+
+.m3-slider {
   flex-grow: 1;
-  accent-color: var(--text-color);
+  position: relative;
+  height: 32px;
+  display: flex;
+  align-items: center;
   cursor: pointer;
-  margin: 0;
+  user-select: none;
+}
+
+.m3-slider-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--icon-bg);
+  overflow: visible;
+}
+
+.m3-slider-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--text-color);
+  pointer-events: none;
+}
+
+.m3-slider-thumb {
+  position: absolute;
+  top: 50%;
+  width: 4px;
+  height: 28px;
+  border-radius: 2px;
+  background: var(--text-color);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
