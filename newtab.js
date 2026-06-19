@@ -13,7 +13,11 @@ let settings = {
   clockWeight: 300,
   clockWidth: 100,
   clockRound: 0,
-  clockSize: 55
+  clockSize: 55,
+  bookmarkMaxWidth: 80,
+  bookmarkButtonSize: 56,
+  bookmarkIconSize: 28,
+  bookmarkSpacing: 5
 };
 
 // Load settings from storage
@@ -243,6 +247,10 @@ const SLIDER_MAP = [
   { sliderId: "axis-width",  settingKey: "clockWidth",  default: 100 },
   { sliderId: "axis-round",  settingKey: "clockRound",  default: 0   },
   { sliderId: "axis-size",   settingKey: "clockSize",   default: 55  },
+  { sliderId: "axis-bm-width", settingKey: "bookmarkMaxWidth", default: 80 },
+  { sliderId: "axis-bm-btnsize", settingKey: "bookmarkButtonSize", default: 56 },
+  { sliderId: "axis-bm-iconsize", settingKey: "bookmarkIconSize", default: 28 },
+  { sliderId: "axis-bm-spacing", settingKey: "bookmarkSpacing", default: 5 }
 ];
 
 function updateCustomSlider(inputEl) {
@@ -306,6 +314,13 @@ function applyClockSettings() {
   clock.style.fontWeight = settings.clockWeight ?? 300;
   clock.style.fontVariationSettings = `"slnt" 0, "wdth" ${settings.clockWidth ?? 100}, "GRAD" 0, "ROND" ${settings.clockRound ?? 0}`;
   clock.style.fontSize = `${(settings.clockSize ?? 55) / 10}rem`;
+
+  // Apply Bookmarks settings as CSS custom properties
+  const root = document.documentElement;
+  root.style.setProperty("--bookmark-max-width", `${settings.bookmarkMaxWidth ?? 80}vw`);
+  root.style.setProperty("--bookmark-button-size", `${(settings.bookmarkButtonSize ?? 56) / 16}rem`);
+  root.style.setProperty("--bookmark-icon-size", `${(settings.bookmarkIconSize ?? 28) / 16}rem`);
+  root.style.setProperty("--bookmark-spacing", `${(settings.bookmarkSpacing ?? 5) / 16}rem`);
 
   SLIDER_MAP.forEach(({ sliderId, settingKey, default: def }) => {
     const input = document.getElementById(sliderId);
