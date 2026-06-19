@@ -297,6 +297,23 @@ body {
   outline: none;
 }
 
+.setting-item select {
+  background: var(--input-bg);
+  color: var(--input-color);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.85rem;
+  outline: none;
+  cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  max-width: 120px;
+}
+
+.settings-section:not(.bing-active) .bing-only {
+  display: none;
+}
+
 .setting-item input[type="range"] {
   display: none;
 }
@@ -377,4 +394,29 @@ body:has(#settings-modal.show .settings-section[data-section="bookmarks"]:hover)
   overflow: hidden;
   height: 0;
   opacity: 0;
+}
+
+#bg-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+  opacity: var(--bg-opacity, 1);
+  filter: blur(var(--bg-blur, 0px));
+  display: none;
+  transition: filter 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Modal open state blurs the background image by an extra 12px */
+body:has(#settings-modal.show) #bg-image {
+  filter: blur(calc(var(--bg-blur, 0px) + 12px));
+}
+
+/* Hovering over the background settings section removes the extra 12px blur, showing only user-set blur */
+body:has(#settings-modal.show .settings-section[data-section="background"]:hover) #bg-image {
+  filter: blur(var(--bg-blur, 0px));
 }

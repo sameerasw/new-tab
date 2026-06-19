@@ -15,6 +15,7 @@
   </head>
   <body>
     <div id="background">
+      <div id="bg-image"></div>
       <div id="bookmarks-container">
         <div id="clock-container">
           <div id="clock"></div>
@@ -107,6 +108,42 @@
             <div class="m3-slider" data-input="axis-bm-spacing">
               <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
               <div class="m3-slider-thumb"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section" data-section="background">
+          <div class="settings-section-title">Background</div>
+          <div class="setting-item">
+            <label for="axis-bg-source">Source</label>
+            <select id="axis-bg-source">
+              <option value="default">Default</option>
+              <option value="bing">Bing</option>
+            </select>
+          </div>
+          <div class="bing-only">
+            <div class="setting-item">
+              <label for="axis-bg-resolution">Resolution</label>
+              <select id="axis-bg-resolution">
+                <option value="1920x1080">Native</option>
+                <option value="UHD">Max</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label for="axis-bg-opacity">Opacity</label>
+              <input type="range" id="axis-bg-opacity" min="0" max="100" value="100">
+              <div class="m3-slider" data-input="axis-bg-opacity">
+                <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
+                <div class="m3-slider-thumb"></div>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label for="axis-bg-blur">Blur</label>
+              <input type="range" id="axis-bg-blur" min="0" max="50" value="0">
+              <div class="m3-slider" data-input="axis-bg-blur">
+                <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
+                <div class="m3-slider-thumb"></div>
+              </div>
             </div>
           </div>
         </div>

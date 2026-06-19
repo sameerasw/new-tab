@@ -9,7 +9,8 @@
   "permissions": [
     "bookmarks",
     "storage",
-    "topSites"
+    "topSites",
+    "https://www.bing.com/"
   ],
   "icons": {
     "16": "icon16.png",

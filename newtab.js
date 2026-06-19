@@ -19,7 +19,11 @@ let settings = {
   bookmarkIconSize: 28,
   bookmarkSpacing: 5,
   topSitesCount: 5,
-  showRecents: true
+  showRecents: true,
+  backgroundSource: "default",
+  bingResolution: "1920x1080",
+  bgOpacity: 100,
+  bgBlur: 0
 };
 
 // Load settings from storage
@@ -30,6 +34,8 @@ function loadSettings() {
     loadCustomCss();
     applyClockSettings();
     initSettingsUI();
+    applyBackground();
+    updateBingImageIfNeeded();
   });
 }
 
@@ -342,7 +348,9 @@ const SLIDER_MAP = [
   { sliderId: "axis-bm-btnsize", settingKey: "bookmarkButtonSize", default: 56 },
   { sliderId: "axis-bm-iconsize", settingKey: "bookmarkIconSize", default: 28 },
   { sliderId: "axis-bm-spacing", settingKey: "bookmarkSpacing", default: 5 },
-  { sliderId: "axis-bm-topsites", settingKey: "topSitesCount", default: 5 }
+  { sliderId: "axis-bm-topsites", settingKey: "topSitesCount", default: 5 },
+  { sliderId: "axis-bg-opacity", settingKey: "bgOpacity", default: 100 },
+  { sliderId: "axis-bg-blur", settingKey: "bgBlur", default: 0 }
 ];
 
 function updateCustomSlider(inputEl) {
@@ -417,6 +425,10 @@ function applyClockSettings() {
   root.style.setProperty("--bookmark-icon-size", `${(settings.bookmarkIconSize ?? 28) / 16}rem`);
   root.style.setProperty("--bookmark-spacing", `${(settings.bookmarkSpacing ?? 5) / 16}rem`);
 
+  // Apply Background settings as CSS custom properties
+  root.style.setProperty("--bg-opacity", `${(settings.bgOpacity ?? 100) / 100}`);
+  root.style.setProperty("--bg-blur", `${settings.bgBlur ?? 0}px`);
+
   // Update Show Recents UI elements
   const recentsCheckbox = document.getElementById("axis-bm-showrecents");
   if (recentsCheckbox) {
@@ -425,6 +437,20 @@ function applyClockSettings() {
   const labelTopsites = document.getElementById("label-bm-topsites");
   if (labelTopsites) {
     labelTopsites.textContent = settings.showRecents ? "Recent Sites" : "Top Bookmarks";
+  }
+
+  // Update Background source and resolution pickers
+  const bgSourceSelect = document.getElementById("axis-bg-source");
+  if (bgSourceSelect) {
+    bgSourceSelect.value = settings.backgroundSource ?? "default";
+  }
+  const bgResSelect = document.getElementById("axis-bg-resolution");
+  if (bgResSelect) {
+    bgResSelect.value = settings.bingResolution ?? "1920x1080";
+  }
+  const bgSection = document.querySelector('.settings-section[data-section="background"]');
+  if (bgSection) {
+    bgSection.classList.toggle("bing-active", settings.backgroundSource === "bing");
   }
 
   SLIDER_MAP.forEach(({ sliderId, settingKey, default: def }) => {
@@ -460,6 +486,29 @@ function initSettingsUI() {
       }
       
       loadAndRenderBookmarks();
+    });
+  }
+
+  const bgSourceSelect = document.getElementById("axis-bg-source");
+  if (bgSourceSelect) {
+    bgSourceSelect.addEventListener("change", (e) => {
+      const val = e.target.value;
+      settings.backgroundSource = val;
+      chrome.storage.local.set({ backgroundSource: val });
+      applyClockSettings();
+      applyBackground();
+      updateBingImageIfNeeded();
+    });
+  }
+
+  const bgResSelect = document.getElementById("axis-bg-resolution");
+  if (bgResSelect) {
+    bgResSelect.addEventListener("change", (e) => {
+      const val = e.target.value;
+      settings.bingResolution = val;
+      chrome.storage.local.set({ bingResolution: val });
+      applyClockSettings();
+      updateBingImageIfNeeded();
     });
   }
 
@@ -542,3 +591,70 @@ window.addEventListener("wheel", (e) => {
   const progress = scrollY / maxScroll;
   applyScrollTransition(progress);
 }, { passive: false });
+
+function applyBackground() {
+  const bgImageEl = document.getElementById("bg-image");
+  if (!bgImageEl) return;
+
+  if (settings.backgroundSource === "bing") {
+    chrome.storage.local.get(["bingImageBase64"], (data) => {
+      if (data.bingImageBase64) {
+        bgImageEl.style.backgroundImage = `url(${data.bingImageBase64})`;
+        bgImageEl.style.display = "block";
+      } else {
+        bgImageEl.style.backgroundImage = "none";
+        bgImageEl.style.display = "none";
+      }
+    });
+  } else {
+    bgImageEl.style.backgroundImage = "none";
+    bgImageEl.style.display = "none";
+  }
+}
+
+function updateBingImageIfNeeded() {
+  if (settings.backgroundSource !== "bing") return;
+
+  chrome.storage.local.get(["bingImageDate", "bingImageBase64", "bingImageResolution"], (data) => {
+    const today = new Date().toDateString();
+    const resolution = settings.bingResolution || "1920x1080";
+    if (data.bingImageDate !== today || data.bingImageResolution !== resolution || !data.bingImageBase64) {
+      fetchAndCacheBingImage(resolution);
+    } else {
+      applyBackground();
+    }
+  });
+}
+
+function fetchAndCacheBingImage(resolution) {
+  const archiveUrl = "https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US";
+  fetch(archiveUrl)
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.images && data.images[0]) {
+        const baseName = data.images[0].urlbase;
+        const ext = resolution === "UHD" ? "_UHD.jpg" : "_1920x1080.jpg";
+        const imageUrl = "https://www.bing.com" + baseName + ext;
+
+        fetch(imageUrl)
+          .then((imgRes) => imgRes.blob())
+          .then((blob) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const base64data = reader.result;
+              const today = new Date().toDateString();
+              chrome.storage.local.set({
+                bingImageBase64: base64data,
+                bingImageDate: today,
+                bingImageResolution: resolution
+              }, () => {
+                applyBackground();
+              });
+            };
+            reader.readAsDataURL(blob);
+          })
+          .catch((err) => console.error("Error reading image data:", err));
+      }
+    })
+    .catch((err) => console.error("Error fetching Bing Image of the Day metadata:", err));
+}
