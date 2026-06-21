@@ -1,5 +1,8 @@
 # New Tab with bookmarks
 
+<img width="1280" height="832" alt="CleanShot-CleanShot-CleanShot-20260621-11  00 31@2x Large" src="https://github.com/user-attachments/assets/7ed9f5de-be9d-44b3-af67-25643214e226" />
+
+
 https://github.com/user-attachments/assets/57e0210c-0932-4122-b80e-2ff0ad43ac99
 
 
