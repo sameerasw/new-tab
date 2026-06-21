@@ -291,19 +291,30 @@ window.addEventListener("resize", () => {
 });
 
 function loadFaviconWithFallbacks(img, url, cacheBuster = false) {
-  const cb = cacheBuster ? `?cb=${Date.now()}` : "";
+  const cb = cacheBuster ? `&cb=${Date.now()}` : "";
   let hostname = "";
   try {
     hostname = new URL(url).hostname;
   } catch (e) {}
 
+  const mv3Favicon = (u, size) => {
+    try {
+      const urlObj = new URL(chrome.runtime.getURL("/_favicon/"));
+      urlObj.searchParams.set("pageUrl", u);
+      urlObj.searchParams.set("size", size.toString());
+      return urlObj.toString() + cb;
+    } catch (e) {
+      return null;
+    }
+  };
+
   // Fallback list:
-  // 1. Chrome's native local favicon cache (32px / 64px)
+  // 1. Chrome's native local favicon cache (32px / 64px) via virtual MV3 path
   // 2. Classic Google s2 service (32px)
   // 3. DuckDuckGo favicon service
   const fallbacks = [
-    `chrome://favicon/size/64/${url}`,
-    `chrome://favicon/${url}`,
+    mv3Favicon(url, 64),
+    mv3Favicon(url, 32),
     `https://www.google.com/s2/favicons?sz=32&domain_url=${encodeURIComponent(url)}`,
     hostname ? `https://icons.duckduckgo.com/ip3/${hostname}.ico` : null,
   ].filter(Boolean);

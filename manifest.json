@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "New Tab with bookmarks",
   "version": "1.0.0",
   "description": "Replaces the new tab page with a grid of bookmarks from a chosen folder. Customizable layout and style. Vimium C friendly.",
@@ -10,8 +10,11 @@
     "bookmarks",
     "storage",
     "topSites",
-    "https://www.bing.com/",
-    "contextMenus"
+    "contextMenus",
+    "favicon"
+  ],
+  "host_permissions": [
+    "https://www.bing.com/"
   ],
   "icons": {
     "16": "icon16.png",
@@ -19,5 +22,7 @@
     "128": "icon128.png"
   },
   "options_page": "options.html",
-  "content_security_policy": "script-src 'self' chrome-extension://hfjbmagddngcpeloejdejnfgbamkjaeg/; object-src 'self'"
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
 }
