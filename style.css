@@ -541,3 +541,134 @@ body:has(#settings-modal.show) #bg-image {
 body:has(#settings-modal.show .settings-section[data-section="background"]:hover) #bg-image {
   filter: blur(var(--bg-blur, 0px)) !important;
 }
+
+/* Developer Section Styles */
+.developer-section {
+  margin-bottom: 0.8rem;
+}
+
+.collapsible-button {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  outline: none;
+  color: var(--text-color);
+}
+
+.developer-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+
+.developer-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #41F7B6;
+  box-shadow: 0 0 8px rgba(65, 247, 182, 0.3);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.developer-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.developer-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.developer-subtitle {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.collapsible-button .chevron-icon {
+  opacity: 0.7;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.collapsible-button.active .chevron-icon {
+  transform: rotate(180deg);
+}
+
+.developer-container {
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+}
+
+.developer-container:not(.collapsed) {
+  max-height: 400px;
+  padding-top: 0.8rem;
+}
+
+.developer-projects {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.projects-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+  margin: 0 0 0.3rem 0;
+  text-align: left;
+}
+
+.projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.project-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--text-color);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 0.75rem;
+  box-sizing: border-box;
+}
+
+.project-button svg {
+  color: #41F7B6;
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.project-button:hover {
+  background: rgba(65, 247, 182, 0.08);
+  border-color: #41F7B6;
+  transform: translateY(-1px);
+}
+
+.project-button:hover svg {
+  transform: scale(1.1);
+}

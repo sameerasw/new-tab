@@ -640,6 +640,22 @@ function initSettingsUI() {
     const input = document.getElementById(sliderId);
     if (input) initCustomSlider(input, settingKey);
   });
+
+  const devToggle = document.getElementById("toggle-developer");
+  if (devToggle) {
+    devToggle.addEventListener("click", () => {
+      const devContent = document.getElementById("developer-content");
+      if (devContent) {
+        devContent.classList.toggle("collapsed");
+        devToggle.classList.toggle("active");
+        if (!devContent.classList.contains("collapsed")) {
+          setTimeout(() => {
+            devContent.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 150);
+        }
+      }
+    });
+  }
 }
 
 function toggleSettings() {
