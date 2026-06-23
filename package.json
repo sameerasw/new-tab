@@ -1,7 +1,7 @@
 {
-  "name": "new-tab-with-bookmarks",
+  "name": "glance",
   "version": "1.0.0",
-  "description": "A minimalistic, customizable new tab page extension for Chromium-based browsers. It displays your bookmarks in rows, supports setting your own CSS and allows Vimium C to inject itself for that tasty vim motion flow.",
+  "description": "A minimalistic, customizable new tab page extension for Chromium-based browsers. It displays your bookmarks in rows and supports setting your own CSS.",
   "homepage": "https://github.com/Zetaniis/new-tab-with-bookmarks#readme",
   "bugs": {
     "url": "https://github.com/Zetaniis/new-tab-with-bookmarks/issues"

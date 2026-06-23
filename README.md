@@ -1,4 +1,4 @@
-# New Tab with bookmarks
+# Glance
 
 <img width="1280" height="832" alt="CleanShot-CleanShot-CleanShot-20260621-11  00 31@2x Large" src="https://github.com/user-attachments/assets/7ed9f5de-be9d-44b3-af67-25643214e226" />
 
@@ -6,7 +6,7 @@
 https://github.com/user-attachments/assets/57e0210c-0932-4122-b80e-2ff0ad43ac99
 
 
-A minimalistic, customizable new tab page extension for Chromium-based browsers. It displays your bookmarks in rows, supports setting your own CSS and allows Vimium C to inject itself for that tasty vim motion flow. 
+A minimalistic, customizable new tab page extension for Chromium-based browsers. It displays your bookmarks in rows and supports setting your own CSS. 
 
 ## Features
 
@@ -14,7 +14,6 @@ A minimalistic, customizable new tab page extension for Chromium-based browsers.
 - **Customizable Layout:** Choose how many icons per row and the maximum number of bookmarks to display.
 - **Custom CSS:** Add your own styles in the options page for advanced tweaks.
 - **Background Styling:** Use the `#background` selector in your custom CSS for an option to add a background image (check the [sample](#sample-background-image-css)).
-- **Vimium C handling** Can use Vimium C plugin directly on the page. 
 - **Favicon Handling:** Uses Google’s favicon service with a fallback to a default icon.
 
 ## Installation
