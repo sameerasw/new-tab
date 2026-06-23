@@ -248,21 +248,13 @@ body {
   max-height: calc(85vh - 3.5rem);
   overflow-y: auto;
   overflow-x: hidden;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
-/* Custom premium scrollbar for vertical settings */
+/* Hide scrollbar for Chrome, Safari and Opera */
 .settings-content::-webkit-scrollbar {
-  width: 6px;
-}
-.settings-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-.settings-content::-webkit-scrollbar-thumb {
-  background: var(--icon-bg);
-  border-radius: 3px;
-}
-.settings-content::-webkit-scrollbar-thumb:hover {
-  background: var(--icon-hover-bg);
+  display: none;
 }
 
 #settings-modal h3 {
