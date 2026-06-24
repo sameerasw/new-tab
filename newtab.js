@@ -4,6 +4,20 @@
 const bookmarksGrid = document.getElementById("bookmarks-grid");
 const backgroundDiv = document.getElementById("background");
 
+const PASTEL_COLORS = [
+  "rgba(255, 182, 193, 0.15)", // Pink
+  "rgba(173, 216, 230, 0.15)", // Blue
+  "rgba(152, 251, 152, 0.12)", // Pale Green
+  "rgba(221, 160, 221, 0.15)", // Plum/Purple
+  "rgba(255, 218, 185, 0.18)", // Peach
+  "rgba(240, 230, 140, 0.15)"  // Yellow
+];
+
+function getPastelColor(id) {
+  const num = parseInt(id, 10) || 0;
+  return PASTEL_COLORS[num % PASTEL_COLORS.length];
+}
+
 // Default settings
 let settings = {
   iconsPerRow: 6,
@@ -127,6 +141,7 @@ function renderBookmarks(bookmarks) {
   container.innerHTML = "";
   const maxEntries = settings.maxEntries || 100;
   const limited = bookmarks.slice(0, maxEntries);
+  let folderCount = 0;
 
   if (settings.showSettingsEntry ?? true) {
     limited.push({
@@ -164,7 +179,9 @@ function renderBookmarks(bookmarks) {
     }
     // Always set the title to the bookmark/folder text (not URL)
     icon.title = bm.title || (bm.url ? "" : "Folder");
-    // Bookmark folder
+    
+    let elementToAppend = icon;
+    
     const insideIcon = document.createElement("div");
     insideIcon.className = "bookmark-icon-inner";
     if (bm.isSettingsEntry) {
@@ -187,19 +204,98 @@ function renderBookmarks(bookmarks) {
     }
     // Bookmark folder
     else if (!bm.url || bm.url.startsWith("chrome://bookmarks")) {
+      icon.classList.add("folder-trigger");
       icon.href = "#";
-      icon.title = bm.title || "Open in Bookmark Manager";
+      icon.title = bm.title || "Folder";
+      
       const img = document.createElement("img");
       img.src = "bookmark_folder.svg";
       img.alt = "";
-      // Open bookmark folder in a new tab
+      insideIcon.appendChild(img);
+      
+      const titleSpan = document.createElement("span");
+      titleSpan.className = "folder-title";
+      titleSpan.textContent = bm.title || "Folder";
+      insideIcon.appendChild(titleSpan);
+      
+      const pastelColor = PASTEL_COLORS[folderCount % PASTEL_COLORS.length];
+      folderCount++;
+      
+      icon.style.backgroundColor = pastelColor;
+      icon.style.borderColor = pastelColor.replace(/[\d.]+\)/, '0.35)');
+      
       icon.addEventListener("click", (e) => {
         e.preventDefault();
-        chrome.tabs.create({ url: bm.url }, () => {
-          window.close();
-        });
+        e.stopPropagation();
+        
+        const isExpanded = icon.classList.contains("expanded");
+        
+        if (isExpanded) {
+          icon.classList.remove("expanded");
+          const childrenToCollapse = document.querySelectorAll(`.folder-child-${bm.id}`);
+          childrenToCollapse.forEach((child) => {
+            child.classList.remove("show");
+            setTimeout(() => {
+              child.remove();
+              calculateNaturalHeight();
+            }, 250);
+          });
+          setTimeout(calculateNaturalHeight, 50);
+        } else {
+          icon.classList.add("expanded");
+          chrome.bookmarks.getChildren(bm.id, (children) => {
+            if (children && children.length > 0) {
+              let lastInserted = icon;
+              const newIcons = [];
+              
+              children.forEach((child) => {
+                const childIcon = document.createElement("a");
+                childIcon.className = `bookmark-icon folder-child folder-child-${bm.id}`;
+                childIcon.title = child.title || (child.url ? "" : "Folder");
+                childIcon.style.backgroundColor = pastelColor;
+                childIcon.style.borderColor = pastelColor.replace(/[\d.]+\)/, '0.35)');
+                
+                const childInner = document.createElement("div");
+                childInner.className = "bookmark-icon-inner";
+                
+                if (!child.url) {
+                  childIcon.href = "#";
+                  const cImg = document.createElement("img");
+                  cImg.src = "bookmark_folder.svg";
+                  childInner.appendChild(cImg);
+                  childIcon.addEventListener("click", (ce) => {
+                    ce.preventDefault();
+                    chrome.tabs.create({ url: `chrome://bookmarks/?id=${child.id}` });
+                  });
+                } else {
+                  childIcon.href = child.url;
+                  const cImg = document.createElement("img");
+                  cImg.alt = "";
+                  loadFaviconWithFallbacks(cImg, child.url);
+                  childInner.appendChild(cImg);
+                }
+                
+                childIcon.appendChild(childInner);
+                
+                lastInserted.after(childIcon);
+                lastInserted = childIcon;
+                newIcons.push(childIcon);
+              });
+              
+              // Force layout calculation and apply transition class on the next frame
+              requestAnimationFrame(() => {
+                newIcons.forEach((ci) => {
+                  ci.offsetHeight; // trigger reflow
+                  ci.classList.add("show");
+                });
+                calculateNaturalHeight();
+              });
+            }
+          });
+        }
       });
-      insideIcon.appendChild(img);
+      
+      elementToAppend = icon;
     }
     // chrome internals
     else if (bm.url.startsWith("chrome://")) {
@@ -245,12 +341,12 @@ function renderBookmarks(bookmarks) {
     icon.appendChild(insideIcon);
     
     if (bm.isTopSite) {
-      container.appendChild(icon);
+      container.appendChild(elementToAppend);
     } else {
       if (standardContainer) {
-        standardContainer.appendChild(icon);
+        standardContainer.appendChild(elementToAppend);
       } else {
-        container.appendChild(icon);
+        container.appendChild(elementToAppend);
       }
     }
   });

@@ -799,3 +799,78 @@ body:has(
 .project-button:hover svg {
   transform: scale(1.1);
 }
+
+/* Bookmark Folders & Collapsible Expansions */
+.folder-trigger {
+  width: auto !important;
+  border-radius: 28px !important;
+  padding-left: 0.8rem;
+  padding-right: 1.1rem;
+  border: 1.5px solid transparent;
+}
+
+.folder-trigger .bookmark-icon-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: auto;
+  height: 100%;
+}
+
+.folder-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-color);
+  opacity: 0.9;
+  white-space: nowrap;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.folder-child {
+  width: 0 !important;
+  height: var(--bookmark-button-size) !important;
+  margin-top: var(--bookmark-spacing) !important;
+  margin-bottom: var(--bookmark-spacing) !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  opacity: 0 !important;
+  transform: none !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+  border: 1.5px solid transparent;
+  transition: 
+    width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    margin-right 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1), 
+    background 0.2s ease,
+    border-color 0.2s ease,
+    border-radius 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    filter 0.2s ease !important;
+}
+
+.folder-child.show {
+  width: var(--bookmark-button-size) !important;
+  margin-left: var(--bookmark-spacing) !important;
+  margin-right: var(--bookmark-spacing) !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.folder-trigger {
+  transition:
+    background 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    border-radius 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.2s ease,
+    filter 0.2s ease !important;
+}
+
+.folder-trigger:hover,
+.folder-child:hover {
+  border-radius: 0.75rem !important;
+  box-shadow: 0 6px 16px var(--shadow-color) !important;
+  filter: brightness(1.15) saturate(1.1) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
