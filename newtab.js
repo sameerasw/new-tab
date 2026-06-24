@@ -40,6 +40,7 @@ function loadSettings() {
     initSettingsUI();
     applyBackground();
     updateBingImageIfNeeded();
+    updateUnsplashImageIfNeeded();
   });
 }
 
@@ -253,6 +254,16 @@ function renderBookmarks(bookmarks) {
       }
     }
   });
+
+  if (standardContainer) {
+    let bgAttr = document.getElementById("bg-attribution");
+    if (!bgAttr) {
+      bgAttr = document.createElement("div");
+      bgAttr.id = "bg-attribution";
+    }
+    standardContainer.appendChild(bgAttr);
+  }
+
   applyStaggeredRowAnimations();
   calculateNaturalHeight();
   resetScrollProgress();
@@ -531,6 +542,7 @@ function applyClockSettings() {
   const bgSection = document.querySelector('.settings-section[data-section="background"]');
   if (bgSection) {
     bgSection.classList.toggle("bing-active", settings.backgroundSource === "bing");
+    bgSection.classList.toggle("unsplash-active", settings.backgroundSource === "unsplash");
   }
 
   SLIDER_MAP.forEach(({ sliderId, settingKey, default: def }) => {
@@ -629,6 +641,7 @@ function initSettingsUI() {
         applyClockSettings();
         applyBackground();
         updateBingImageIfNeeded();
+        updateUnsplashImageIfNeeded();
       } else if (settingKey === "bingResolution") {
         applyClockSettings();
         updateBingImageIfNeeded();
@@ -761,6 +774,7 @@ window.addEventListener("wheel", (e) => {
 
 function applyBackground() {
   const bgImageEl = document.getElementById("bg-image");
+  const bgAttrEl = document.getElementById("bg-attribution");
   if (!bgImageEl) return;
 
   if (settings.backgroundSource === "bing") {
@@ -771,9 +785,28 @@ function applyBackground() {
       } else {
         bgImageEl.classList.remove("show-image");
       }
+      if (bgAttrEl) bgAttrEl.innerHTML = "";
+    });
+  } else if (settings.backgroundSource === "unsplash") {
+    chrome.storage.local.get(["unsplashImageBase64", "unsplashImageAuthor", "unsplashImageAuthorLink", "unsplashImageLink"], (data) => {
+      if (data.unsplashImageBase64) {
+        bgImageEl.style.backgroundImage = `url(${data.unsplashImageBase64})`;
+        bgImageEl.classList.add("show-image");
+      } else {
+        bgImageEl.classList.remove("show-image");
+      }
+
+      if (bgAttrEl) {
+        if (data.unsplashImageAuthor && data.unsplashImageAuthorLink) {
+          bgAttrEl.innerHTML = `Photo by <a href="${data.unsplashImageAuthorLink}" target="_blank">${data.unsplashImageAuthor}</a> on <a href="${data.unsplashImageLink || 'https://unsplash.com/?utm_source=Glance&utm_medium=referral'}" target="_blank">Unsplash</a>`;
+        } else {
+          bgAttrEl.innerHTML = "";
+        }
+      }
     });
   } else {
     bgImageEl.classList.remove("show-image");
+    if (bgAttrEl) bgAttrEl.innerHTML = "";
   }
 }
 
@@ -822,6 +855,65 @@ function fetchAndCacheBingImage(resolution) {
       }
     })
     .catch((err) => console.error("Error fetching Bing Image of the Day metadata:", err));
+}
+
+function updateUnsplashImageIfNeeded() {
+  if (settings.backgroundSource !== "unsplash") return;
+
+  chrome.storage.local.get(["unsplashImageDate", "unsplashImageId", "unsplashImageBase64"], (data) => {
+    const today = new Date().toDateString();
+    if (data.unsplashImageDate !== today || !data.unsplashImageBase64) {
+      fetchAndCacheUnsplashImage();
+    } else {
+      applyBackground();
+    }
+  });
+}
+
+function fetchAndCacheUnsplashImage() {
+  const jsonUrl = "https://sameerasw.com/unsplash-today.json";
+  
+  fetch(jsonUrl)
+    .then((res) => {
+      if (!res.ok) throw new Error("Failed to fetch daily Unsplash metadata");
+      return res.json();
+    })
+    .then((data) => {
+      if (data && data.url) {
+        chrome.storage.local.get(["unsplashImageId", "unsplashImageBase64"], (cached) => {
+          if (cached.unsplashImageId === data.id && cached.unsplashImageBase64) {
+            const today = new Date().toDateString();
+            chrome.storage.local.set({ unsplashImageDate: today }, () => {
+              applyBackground();
+            });
+            return;
+          }
+
+          fetch(data.url)
+            .then((imgRes) => imgRes.blob())
+            .then((blob) => {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                const base64data = reader.result;
+                const today = new Date().toDateString();
+                chrome.storage.local.set({
+                  unsplashImageBase64: base64data,
+                  unsplashImageDate: today,
+                  unsplashImageId: data.id,
+                  unsplashImageAuthor: data.author ? data.author.name : "",
+                  unsplashImageAuthorLink: data.author ? data.author.link : "",
+                  unsplashImageLink: data.link || ""
+                }, () => {
+                  applyBackground();
+                });
+              };
+              reader.readAsDataURL(blob);
+            })
+            .catch((err) => console.error("Error reading Unsplash image data:", err));
+        });
+      }
+    })
+    .catch((err) => console.error("Error fetching daily Unsplash image metadata:", err));
 }
 
 // Register browser context menu to open settings
