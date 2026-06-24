@@ -158,8 +158,6 @@ body {
   box-shadow: 0 6px 16px var(--shadow-color);
 }
 
-
-
 .bookmark-icon img {
   width: var(--bookmark-icon-size);
   height: var(--bookmark-icon-size);
@@ -222,14 +220,14 @@ body {
   overflow: hidden;
   z-index: 10;
   box-shadow: 0 12px 32px var(--shadow-color);
-  
+
   /* Open/close transition from bottom-right corner */
   transform-origin: bottom right;
   transform: scale(0.6) translate(10px, 10px);
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
-  transition: 
+  transition:
     transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
     opacity 0.22s ease-out,
     visibility 0.28s;
@@ -247,8 +245,8 @@ body {
   max-height: calc(85vh - 3.5rem);
   overflow-y: auto;
   overflow-x: hidden;
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -258,7 +256,8 @@ body {
 
 #settings-modal h3 {
   margin: 0.2rem 0.4rem 0.8rem 0.4rem;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 1.15rem;
   font-weight: 600;
   color: var(--text-color);
@@ -294,7 +293,8 @@ body {
 }
 
 .settings-section-title {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -310,14 +310,14 @@ body {
   height: 5px;
   border-right: 1.5px solid currentColor;
   border-bottom: 1.5px solid currentColor;
-  transform: rotate(45deg);
+  transform: rotate(-135deg);
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   margin-left: auto;
   opacity: 0.6;
 }
 
 .settings-section.collapsed .settings-section-header::after {
-  transform: rotate(-135deg);
+  transform: rotate(45deg);
 }
 
 .settings-section-content {
@@ -331,7 +331,9 @@ body {
   min-height: 0;
   padding: 0 1rem 0.8rem 1rem;
   box-sizing: border-box;
-  transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    opacity 0.2s ease,
+    transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 1;
   transform: translateY(0);
 }
@@ -362,7 +364,8 @@ body {
 .setting-item label:not(.switch) {
   flex: 1 1 auto;
   font-size: 0.85rem;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   opacity: 0.9;
 }
 
@@ -434,12 +437,15 @@ body {
   color: var(--text-color);
   padding: 0.25rem 0.4rem;
   font-size: 0.8rem;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-weight: 500;
   border-radius: 16px;
   cursor: pointer;
   outline: none;
-  transition: background 0.18s, color 0.18s;
+  transition:
+    background 0.18s,
+    color 0.18s;
   white-space: nowrap;
   min-width: 60px;
   text-align: center;
@@ -460,7 +466,8 @@ body {
   padding: 0.2rem 0.4rem;
   font-size: 0.85rem;
   outline: none;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   width: 60px;
   text-align: center;
 }
@@ -533,12 +540,14 @@ body:has(#settings-modal.show) #bookmarks-grid {
 }
 
 /* Unblur Clock when hovering over the Clock settings section */
-body:has(#settings-modal.show .settings-section[data-section="clock"]:hover) #clock-container {
+body:has(#settings-modal.show .settings-section[data-section="clock"]:hover)
+  #clock-container {
   filter: blur(0);
 }
 
 /* Unblur Bookmarks when hovering over the Bookmarks settings section */
-body:has(#settings-modal.show .settings-section[data-section="bookmarks"]:hover) #bookmarks-grid {
+body:has(#settings-modal.show .settings-section[data-section="bookmarks"]:hover)
+  #bookmarks-grid {
   filter: blur(0);
 }
 
@@ -598,7 +607,10 @@ body:has(#settings-modal.show) #bg-image {
 }
 
 /* Hovering over the background settings section removes the extra 12px blur, showing only user-set blur */
-body:has(#settings-modal.show .settings-section[data-section="background"]:hover) #bg-image {
+body:has(
+    #settings-modal.show .settings-section[data-section="background"]:hover
+  )
+  #bg-image {
   filter: blur(var(--bg-blur, 0px)) !important;
 }
 
@@ -611,7 +623,8 @@ body:has(#settings-modal.show .settings-section[data-section="background"]:hover
   color: rgba(255, 255, 255, 0.45);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   pointer-events: auto;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   text-align: center;
 }
 
@@ -683,7 +696,7 @@ body:has(#settings-modal.show .settings-section[data-section="background"]:hover
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #41F7B6;
+  border: 2px solid #41f7b6;
   box-shadow: 0 0 8px rgba(65, 247, 182, 0.3);
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   flex-shrink: 0;
@@ -717,7 +730,9 @@ body:has(#settings-modal.show .settings-section[data-section="background"]:hover
 .developer-container {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), padding 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    padding 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   padding: 0 1rem;
   box-sizing: border-box;
 }
@@ -768,7 +783,7 @@ body:has(#settings-modal.show .settings-section[data-section="background"]:hover
 }
 
 .project-button svg {
-  color: #41F7B6;
+  color: #41f7b6;
   width: 16px;
   height: 16px;
   transition: transform 0.3s ease;
@@ -777,7 +792,7 @@ body:has(#settings-modal.show .settings-section[data-section="background"]:hover
 
 .project-button:hover {
   background: rgba(65, 247, 182, 0.08);
-  border-color: #41F7B6;
+  border-color: #41f7b6;
   transform: translateY(-1px);
 }
 
