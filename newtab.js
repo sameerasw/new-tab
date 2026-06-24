@@ -778,14 +778,25 @@ function applyBackground() {
   if (!bgImageEl) return;
 
   if (settings.backgroundSource === "bing") {
-    chrome.storage.local.get(["bingImageBase64"], (data) => {
+    chrome.storage.local.get(["bingImageBase64", "bingImageCopyright", "bingImageCopyrightLink"], (data) => {
       if (data.bingImageBase64) {
         bgImageEl.style.backgroundImage = `url(${data.bingImageBase64})`;
         bgImageEl.classList.add("show-image");
       } else {
         bgImageEl.classList.remove("show-image");
       }
-      if (bgAttrEl) bgAttrEl.innerHTML = "";
+      if (bgAttrEl) {
+        if (data.bingImageCopyright) {
+          const cleanLink = data.bingImageCopyrightLink || "";
+          if (cleanLink) {
+            bgAttrEl.innerHTML = `<a href="${cleanLink}" target="_blank">${data.bingImageCopyright}</a>`;
+          } else {
+            bgAttrEl.textContent = data.bingImageCopyright;
+          }
+        } else {
+          bgAttrEl.innerHTML = "";
+        }
+      }
     });
   } else if (settings.backgroundSource === "unsplash") {
     chrome.storage.local.get(["unsplashImageBase64", "unsplashImageAuthor", "unsplashImageAuthorLink", "unsplashImageLink"], (data) => {
@@ -833,6 +844,9 @@ function fetchAndCacheBingImage(resolution) {
         const baseName = data.images[0].urlbase;
         const ext = resolution === "UHD" ? "_UHD.jpg" : "_1920x1080.jpg";
         const imageUrl = "https://www.bing.com" + baseName + ext;
+        const copyright = data.images[0].copyright || "";
+        const copyrightLink = data.images[0].copyrightlink ?
+          (data.images[0].copyrightlink.startsWith("http") ? data.images[0].copyrightlink : "https://www.bing.com" + data.images[0].copyrightlink) : "";
 
         fetch(imageUrl)
           .then((imgRes) => imgRes.blob())
@@ -844,7 +858,9 @@ function fetchAndCacheBingImage(resolution) {
               chrome.storage.local.set({
                 bingImageBase64: base64data,
                 bingImageDate: today,
-                bingImageResolution: resolution
+                bingImageResolution: resolution,
+                bingImageCopyright: copyright,
+                bingImageCopyrightLink: copyrightLink
               }, () => {
                 applyBackground();
               });
