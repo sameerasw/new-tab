@@ -559,6 +559,34 @@ function applyClockSettings() {
 function initSettingsUI() {
   const modal = document.getElementById("settings-modal");
 
+  // Load and apply collapsed sections state
+  chrome.storage.local.get(["collapsedSections"], (data) => {
+    const collapsed = data.collapsedSections || {};
+    document.querySelectorAll(".settings-section").forEach((section) => {
+      const sectionId = section.dataset.section;
+      if (sectionId && collapsed[sectionId]) {
+        section.classList.add("collapsed");
+      }
+    });
+  });
+
+  // Toggle collapsible settings sections
+  document.querySelectorAll(".settings-section-header").forEach((header) => {
+    header.addEventListener("click", () => {
+      const section = header.closest(".settings-section");
+      if (!section) return;
+      const sectionId = section.dataset.section;
+      if (!sectionId) return;
+      const isCollapsed = section.classList.toggle("collapsed");
+      
+      chrome.storage.local.get(["collapsedSections"], (data) => {
+        const collapsed = data.collapsedSections || {};
+        collapsed[sectionId] = isCollapsed;
+        chrome.storage.local.set({ collapsedSections: collapsed });
+      });
+    });
+  });
+
   document.addEventListener("click", (e) => {
     if (modal && modal.classList.contains("show")) {
       if (!modal.contains(e.target)) {
@@ -755,22 +783,18 @@ function applyScrollTransition(progress) {
   });
 }
 
-// Global scroll event listener driving the transition
-window.addEventListener("wheel", (e) => {
-  const modal = document.getElementById("settings-modal");
-  // Ignore scrolling inside settings modal
-  if (modal && modal.classList.contains("show") && modal.contains(e.target)) {
-    return;
-  }
+// Scroll event listener on background driving the transition
+if (backgroundDiv) {
+  backgroundDiv.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    scrollY += e.deltaY;
+    if (scrollY < 0) scrollY = 0;
+    if (scrollY > maxScroll) scrollY = maxScroll;
 
-  e.preventDefault();
-  scrollY += e.deltaY;
-  if (scrollY < 0) scrollY = 0;
-  if (scrollY > maxScroll) scrollY = maxScroll;
-
-  const progress = scrollY / maxScroll;
-  applyScrollTransition(progress);
-}, { passive: false });
+    const progress = scrollY / maxScroll;
+    applyScrollTransition(progress);
+  }, { passive: false });
+}
 
 function applyBackground() {
   const bgImageEl = document.getElementById("bg-image");

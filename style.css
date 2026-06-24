@@ -243,8 +243,7 @@ body {
 }
 
 .settings-content {
-  display: flex;
-  flex-direction: column;
+  display: block;
   max-height: calc(85vh - 3.5rem);
   overflow-y: auto;
   overflow-x: hidden;
@@ -269,12 +268,29 @@ body {
   break-inside: avoid;
   background: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.05));
   border-radius: 12px;
-  padding: 0.8rem 1rem;
+  padding: 0;
   margin-bottom: 0.8rem;
+  overflow: hidden;
 }
 
 .settings-section:last-child {
   margin-bottom: 0;
+}
+
+.settings-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  cursor: pointer;
+  user-select: none;
+  padding: 0.8rem 1rem;
+  box-sizing: border-box;
+  transition: background 0.15s ease;
+}
+
+.settings-section-header:hover {
+  background: light-dark(rgba(0, 0, 0, 0.02), rgba(255, 255, 255, 0.02));
 }
 
 .settings-section-title {
@@ -284,7 +300,51 @@ body {
   letter-spacing: 0.08em;
   font-weight: 700;
   opacity: 0.6;
-  margin: 0 0 0.8rem 0;
+  margin: 0;
+}
+
+.settings-section-header::after {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: auto;
+  opacity: 0.6;
+}
+
+.settings-section.collapsed .settings-section-header::after {
+  transform: rotate(-135deg);
+}
+
+.settings-section-content {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.settings-section-content-inner {
+  overflow: hidden;
+  min-height: 0;
+  padding: 0 1rem 0.8rem 1rem;
+  box-sizing: border-box;
+  transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.settings-section.collapsed .settings-section-content {
+  grid-template-rows: 0fr;
+}
+
+.settings-section.collapsed .settings-section-content-inner {
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  padding-bottom: 0;
 }
 
 .setting-item {
@@ -596,13 +656,19 @@ body:has(#settings-modal.show .settings-section[data-section="background"]:hover
   width: 100%;
   background: transparent;
   border: none;
-  padding: 0;
+  padding: 0.8rem 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
   outline: none;
   color: var(--text-color);
+  box-sizing: border-box;
+  transition: background 0.15s ease;
+}
+
+.collapsible-button:hover {
+  background: light-dark(rgba(0, 0, 0, 0.02), rgba(255, 255, 255, 0.02));
 }
 
 .developer-card {
@@ -651,13 +717,14 @@ body:has(#settings-modal.show .settings-section[data-section="background"]:hover
 .developer-container {
   max-height: 0;
   overflow: hidden;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  padding: 0;
+  transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), padding 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0 1rem;
+  box-sizing: border-box;
 }
 
 .developer-container:not(.collapsed) {
   max-height: 400px;
-  padding-top: 0.8rem;
+  padding: 0 1rem 0.8rem 1rem;
 }
 
 .developer-projects {

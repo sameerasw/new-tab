@@ -27,164 +27,182 @@
       <h3>Settings</h3>
       <div class="settings-content">
         <div class="settings-section" data-section="clock">
-          <div class="settings-section-title">Clock</div>
-          <div class="setting-item">
-            <label>Format</label>
-            <div class="segmented-control" data-setting="clockFormat">
-              <button class="segment-btn active" data-value="12h">12h</button>
-              <button class="segment-btn" data-value="24h">24h</button>
-            </div>
+          <div class="settings-section-header">
+            <div class="settings-section-title">Clock</div>
           </div>
-          <div class="setting-item" id="setting-item-leading-zero">
-            <label for="axis-clock-leadingzero">Leading 0</label>
-            <label class="switch">
-              <input type="checkbox" id="axis-clock-leadingzero" checked>
-              <span class="switch-slider"></span>
-            </label>
-          </div>
-          <div class="setting-item">
-            <label>Separator</label>
-            <div class="segmented-control" data-setting="clockSeparator">
-              <button class="segment-btn active" data-value=":">:</button>
-              <button class="segment-btn" data-value=".">.</button>
-              <button class="segment-btn" data-value=" ">[space]</button>
-            </div>
-          </div>
-          <div class="setting-item">
-            <label for="axis-weight">Weight</label>
-            <input type="range" id="axis-weight" min="100" max="1000" value="300">
-            <div class="m3-slider" data-input="axis-weight">
-              <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
-              <div class="m3-slider-thumb"></div>
-            </div>
-          </div>
-          <div class="setting-item">
-            <label for="axis-width">Width</label>
-            <input type="range" id="axis-width" min="25" max="150" value="100">
-            <div class="m3-slider" data-input="axis-width">
-              <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
-              <div class="m3-slider-thumb"></div>
-            </div>
-          </div>
-          <div class="setting-item">
-            <label for="axis-round">Roundness</label>
-            <input type="range" id="axis-round" min="0" max="100" value="0">
-            <div class="m3-slider" data-input="axis-round">
-              <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
-              <div class="m3-slider-thumb"></div>
-            </div>
-          </div>
-          <div class="setting-item">
-            <label for="axis-size">Size</label>
-            <input type="range" id="axis-size" min="30" max="120" value="55">
-            <div class="m3-slider" data-input="axis-size">
-              <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
-              <div class="m3-slider-thumb"></div>
+          <div class="settings-section-content">
+            <div class="settings-section-content-inner">
+              <div class="setting-item">
+                <label>Format</label>
+                <div class="segmented-control" data-setting="clockFormat">
+                  <button class="segment-btn active" data-value="12h">12h</button>
+                  <button class="segment-btn" data-value="24h">24h</button>
+                </div>
+              </div>
+              <div class="setting-item" id="setting-item-leading-zero">
+                <label for="axis-clock-leadingzero">Leading 0</label>
+                <label class="switch">
+                  <input type="checkbox" id="axis-clock-leadingzero" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <div class="setting-item">
+                <label>Separator</label>
+                <div class="segmented-control" data-setting="clockSeparator">
+                  <button class="segment-btn active" data-value=":">:</button>
+                  <button class="segment-btn" data-value=".">.</button>
+                  <button class="segment-btn" data-value=" ">[space]</button>
+                </div>
+              </div>
+              <div class="setting-item">
+                <label for="axis-weight">Weight</label>
+                <input type="range" id="axis-weight" min="100" max="1000" value="300">
+                <div class="m3-slider" data-input="axis-weight">
+                  <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
+                  <div class="m3-slider-thumb"></div>
+                </div>
+              </div>
+              <div class="setting-item">
+                <label for="axis-width">Width</label>
+                <input type="range" id="axis-width" min="25" max="150" value="100">
+                <div class="m3-slider" data-input="axis-width">
+                  <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
+                  <div class="m3-slider-thumb"></div>
+                </div>
+              </div>
+              <div class="setting-item">
+                <label for="axis-round">Roundness</label>
+                <input type="range" id="axis-round" min="0" max="100" value="0">
+                <div class="m3-slider" data-input="axis-round">
+                  <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
+                  <div class="m3-slider-thumb"></div>
+                </div>
+              </div>
+              <div class="setting-item">
+                <label for="axis-size">Size</label>
+                <input type="range" id="axis-size" min="30" max="120" value="55">
+                <div class="m3-slider" data-input="axis-size">
+                  <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
+                  <div class="m3-slider-thumb"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         <div class="settings-section" data-section="bookmarks">
-          <div class="settings-section-title">Bookmarks</div>
-          <div class="setting-item">
-            <label for="axis-bm-limit">Limit</label>
-            <input type="number" id="axis-bm-limit" min="5" max="1000" value="100">
+          <div class="settings-section-header">
+            <div class="settings-section-title">Bookmarks</div>
           </div>
-          <div class="setting-item">
-            <label for="axis-bm-width">Max Width</label>
-            <input type="range" id="axis-bm-width" min="30" max="100" value="80">
-            <div class="m3-slider" data-input="axis-bm-width">
-              <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
-              <div class="m3-slider-thumb"></div>
-            </div>
-          </div>
-          <div class="setting-item">
-            <label for="axis-bm-btnsize">Button Size</label>
-            <input type="range" id="axis-bm-btnsize" min="24" max="96" value="56">
-            <div class="m3-slider" data-input="axis-bm-btnsize">
-              <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
-              <div class="m3-slider-thumb"></div>
-            </div>
-          </div>
-          <div class="setting-item">
-            <label for="axis-bm-iconsize">Icon Size</label>
-            <input type="range" id="axis-bm-iconsize" min="12" max="64" value="28">
-            <div class="m3-slider" data-input="axis-bm-iconsize">
-              <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
-              <div class="m3-slider-thumb"></div>
-            </div>
-          </div>
-          <div class="setting-item">
-            <label for="axis-bm-showrecents">Show Recents</label>
-            <label class="switch">
-              <input type="checkbox" id="axis-bm-showrecents" checked>
-              <span class="switch-slider"></span>
-            </label>
-          </div>
-          <div class="setting-item">
-            <label for="axis-bm-showsettings">Show Settings Icon</label>
-            <label class="switch">
-              <input type="checkbox" id="axis-bm-showsettings" checked>
-              <span class="switch-slider"></span>
-            </label>
-          </div>
-          <div class="setting-item">
-            <label for="axis-bm-topsites" id="label-bm-topsites">Recent Sites</label>
-            <input type="range" id="axis-bm-topsites" min="0" max="15" value="5">
-            <div class="m3-slider" data-input="axis-bm-topsites">
-              <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
-              <div class="m3-slider-thumb"></div>
-            </div>
-          </div>
-          <div class="setting-item">
-            <label for="axis-bm-spacing">Spacing</label>
-            <input type="range" id="axis-bm-spacing" min="0" max="32" value="5">
-            <div class="m3-slider" data-input="axis-bm-spacing">
-              <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
-              <div class="m3-slider-thumb"></div>
+          <div class="settings-section-content">
+            <div class="settings-section-content-inner">
+              <div class="setting-item">
+                <label for="axis-bm-limit">Limit</label>
+                <input type="number" id="axis-bm-limit" min="5" max="1000" value="100">
+              </div>
+              <div class="setting-item">
+                <label for="axis-bm-width">Max Width</label>
+                <input type="range" id="axis-bm-width" min="30" max="100" value="80">
+                <div class="m3-slider" data-input="axis-bm-width">
+                  <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
+                  <div class="m3-slider-thumb"></div>
+                </div>
+              </div>
+              <div class="setting-item">
+                <label for="axis-bm-btnsize">Button Size</label>
+                <input type="range" id="axis-bm-btnsize" min="24" max="96" value="56">
+                <div class="m3-slider" data-input="axis-bm-btnsize">
+                  <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
+                  <div class="m3-slider-thumb"></div>
+                </div>
+              </div>
+              <div class="setting-item">
+                <label for="axis-bm-iconsize">Icon Size</label>
+                <input type="range" id="axis-bm-iconsize" min="12" max="64" value="28">
+                <div class="m3-slider" data-input="axis-bm-iconsize">
+                  <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
+                  <div class="m3-slider-thumb"></div>
+                </div>
+              </div>
+              <div class="setting-item">
+                <label for="axis-bm-showrecents">Show Recents</label>
+                <label class="switch">
+                  <input type="checkbox" id="axis-bm-showrecents" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <div class="setting-item">
+                <label for="axis-bm-showsettings">Show Settings Icon</label>
+                <label class="switch">
+                  <input type="checkbox" id="axis-bm-showsettings" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <div class="setting-item">
+                <label for="axis-bm-topsites" id="label-bm-topsites">Recent Sites</label>
+                <input type="range" id="axis-bm-topsites" min="0" max="15" value="5">
+                <div class="m3-slider" data-input="axis-bm-topsites">
+                  <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
+                  <div class="m3-slider-thumb"></div>
+                </div>
+              </div>
+              <div class="setting-item">
+                <label for="axis-bm-spacing">Spacing</label>
+                <input type="range" id="axis-bm-spacing" min="0" max="32" value="5">
+                <div class="m3-slider" data-input="axis-bm-spacing">
+                  <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
+                  <div class="m3-slider-thumb"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         <div class="settings-section" data-section="background">
-          <div class="settings-section-title">Background</div>
-          <div class="setting-item">
-            <label>Source</label>
-            <div class="segmented-control" data-setting="backgroundSource">
-              <button class="segment-btn active" data-value="default">Default</button>
-              <button class="segment-btn" data-value="bing">Bing</button>
-              <button class="segment-btn" data-value="unsplash">Curated</button>
-            </div>
+          <div class="settings-section-header">
+            <div class="settings-section-title">Background</div>
           </div>
-          <div class="bing-only">
-            <div class="setting-item">
-              <label>Resolution</label>
-              <div class="segmented-control" data-setting="bingResolution">
-                <button class="segment-btn active" data-value="1920x1080">Native</button>
-                <button class="segment-btn" data-value="UHD">Max</button>
+          <div class="settings-section-content">
+            <div class="settings-section-content-inner">
+              <div class="setting-item">
+                <label>Source</label>
+                <div class="segmented-control" data-setting="backgroundSource">
+                  <button class="segment-btn active" data-value="default">Default</button>
+                  <button class="segment-btn" data-value="bing">Bing</button>
+                  <button class="segment-btn" data-value="unsplash">Curated</button>
+                </div>
               </div>
-            </div>
-          </div>
-          <div class="unsplash-only">
-            <div class="setting-item unsplash-info">
-              <span>Pulls a daily wallpaper from my curated <a href="https://unsplash.com/collections/LqO9knU9z2A/Likes" target="_blank">Unsplash collection</a>.</span>
-            </div>
-          </div>
-          <div class="custom-bg-only">
-            <div class="setting-item">
-              <label for="axis-bg-opacity">Opacity</label>
-              <input type="range" id="axis-bg-opacity" min="0" max="100" value="100">
-              <div class="m3-slider" data-input="axis-bg-opacity">
-                <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
-                <div class="m3-slider-thumb"></div>
+              <div class="bing-only">
+                <div class="setting-item">
+                  <label>Resolution</label>
+                  <div class="segmented-control" data-setting="bingResolution">
+                    <button class="segment-btn active" data-value="1920x1080">Native</button>
+                    <button class="segment-btn" data-value="UHD">Max</button>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="setting-item">
-              <label for="axis-bg-blur">Blur</label>
-              <input type="range" id="axis-bg-blur" min="0" max="50" value="0">
-              <div class="m3-slider" data-input="axis-bg-blur">
-                <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
-                <div class="m3-slider-thumb"></div>
+              <div class="unsplash-only">
+                <div class="setting-item unsplash-info">
+                  <span>Pulls a daily wallpaper from my curated <a href="https://unsplash.com/collections/LqO9knU9z2A/Likes" target="_blank">Unsplash collection</a>.</span>
+                </div>
+              </div>
+              <div class="custom-bg-only">
+                <div class="setting-item">
+                  <label for="axis-bg-opacity">Opacity</label>
+                  <input type="range" id="axis-bg-opacity" min="0" max="100" value="100">
+                  <div class="m3-slider" data-input="axis-bg-opacity">
+                    <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
+                    <div class="m3-slider-thumb"></div>
+                  </div>
+                </div>
+                <div class="setting-item">
+                  <label for="axis-bg-blur">Blur</label>
+                  <input type="range" id="axis-bg-blur" min="0" max="50" value="0">
+                  <div class="m3-slider" data-input="axis-bg-blur">
+                    <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
+                    <div class="m3-slider-thumb"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
