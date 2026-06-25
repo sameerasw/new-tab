@@ -46,7 +46,9 @@ let settings = {
   dateFormat: "0",
   datePosition: "below",
   dateSize: 22,
-  dateWeight: 400
+  dateWeight: 400,
+  clockColor: "auto",
+  dateColor: "auto"
 };
 
 // Load settings from storage
@@ -596,6 +598,12 @@ function applyDateSettings() {
   dateElement.style.fontSize = `${settings.dateSize ?? 22}px`;
   dateElement.style.fontWeight = settings.dateWeight ?? 400;
   dateElement.style.fontVariationSettings = `"slnt" 0, "wdth" 100, "GRAD" 0, "ROND" 100, "wght" ${settings.dateWeight ?? 400}`;
+  dateElement.style.color = settings.dateColor === "auto" ? "" : settings.dateColor;
+
+  const dateColorInput = document.getElementById("axis-date-color");
+  if (dateColorInput) {
+    dateColorInput.value = settings.dateColor === "auto" ? "#ffffff" : settings.dateColor;
+  }
 
   const clockContainer = document.getElementById("clock-container");
   const clockElement = document.getElementById("clock");
@@ -708,6 +716,12 @@ function applyClockSettings() {
   clock.style.fontWeight = settings.clockWeight ?? 300;
   clock.style.fontVariationSettings = `"slnt" 0, "wdth" ${settings.clockWidth ?? 100}, "GRAD" 0, "ROND" ${settings.clockRound ?? 0}`;
   clock.style.fontSize = `${(settings.clockSize ?? 55) / 10}rem`;
+  clock.style.color = settings.clockColor === "auto" ? "" : settings.clockColor;
+
+  const clockColorInput = document.getElementById("axis-clock-color");
+  if (clockColorInput) {
+    clockColorInput.value = settings.clockColor === "auto" ? "#ffffff" : settings.clockColor;
+  }
 
   // Apply Bookmarks settings as CSS custom properties
   const root = document.documentElement;
@@ -885,6 +899,44 @@ function initSettingsUI() {
       const val = e.target.value;
       settings.dateFormat = val;
       chrome.storage.local.set({ dateFormat: val });
+      applyDateSettings();
+    });
+  }
+
+  const clockColorInput = document.getElementById("axis-clock-color");
+  if (clockColorInput) {
+    clockColorInput.addEventListener("input", (e) => {
+      const val = e.target.value;
+      settings.clockColor = val;
+      chrome.storage.local.set({ clockColor: val });
+      applyClockSettings();
+    });
+  }
+
+  const clockColorAutoBtn = document.getElementById("axis-clock-color-auto");
+  if (clockColorAutoBtn) {
+    clockColorAutoBtn.addEventListener("click", () => {
+      settings.clockColor = "auto";
+      chrome.storage.local.set({ clockColor: "auto" });
+      applyClockSettings();
+    });
+  }
+
+  const dateColorInput = document.getElementById("axis-date-color");
+  if (dateColorInput) {
+    dateColorInput.addEventListener("input", (e) => {
+      const val = e.target.value;
+      settings.dateColor = val;
+      chrome.storage.local.set({ dateColor: val });
+      applyDateSettings();
+    });
+  }
+
+  const dateColorAutoBtn = document.getElementById("axis-date-color-auto");
+  if (dateColorAutoBtn) {
+    dateColorAutoBtn.addEventListener("click", () => {
+      settings.dateColor = "auto";
+      chrome.storage.local.set({ dateColor: "auto" });
       applyDateSettings();
     });
   }

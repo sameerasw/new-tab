@@ -474,6 +474,30 @@ body {
   color: var(--text-color);
 }
 
+.setting-item input[type="color"] {
+  width: 40px;
+  height: 30px;
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.setting-item input[type="color"]:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.setting-item input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.setting-item input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 5px;
+}
+
 /* Segmented button control styling */
 .segmented-control {
   display: flex;
