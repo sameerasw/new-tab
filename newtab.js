@@ -51,6 +51,7 @@ let settings = {
   dateColor: "auto",
   greetingColor: "auto",
   backgroundColor: "auto",
+  matchWallpaperColors: true,
   bgZoomDuration: 2.5,
   showGreeting: false,
   greetingName: "",
@@ -826,6 +827,11 @@ function applyClockSettings() {
     bgColorInput.value = settings.backgroundColor === "auto" ? "#222222" : settings.backgroundColor;
   }
 
+  const matchColorsCheckbox = document.getElementById("axis-bg-match-colors");
+  if (matchColorsCheckbox) {
+    matchColorsCheckbox.checked = settings.matchWallpaperColors ?? true;
+  }
+
   SLIDER_MAP.forEach(({ sliderId, settingKey, default: def }) => {
     const input = document.getElementById(sliderId);
     if (input) {
@@ -1200,6 +1206,17 @@ function initSettingsUI() {
       applyClockSettings();
     });
   }
+
+  const matchColorsCheckbox = document.getElementById("axis-bg-match-colors");
+  if (matchColorsCheckbox) {
+    matchColorsCheckbox.checked = settings.matchWallpaperColors ?? true;
+    matchColorsCheckbox.addEventListener("change", (e) => {
+      const checked = e.target.checked;
+      settings.matchWallpaperColors = checked;
+      chrome.storage.local.set({ matchWallpaperColors: checked });
+      applyBackground();
+    });
+  }
 }
 
 function toggleSettings() {
@@ -1313,12 +1330,26 @@ function applyBackground() {
   }
 
   if (settings.backgroundSource === "bing") {
-    chrome.storage.local.get(["bingImageBase64", "bingImageCopyright", "bingImageCopyrightLink"], (data) => {
+    chrome.storage.local.get(["bingImageBase64", "bingImageCopyright", "bingImageCopyrightLink", "bingImageTheme"], (data) => {
       if (data.bingImageBase64) {
         bgImageEl.style.backgroundImage = `url(${data.bingImageBase64})`;
         bgImageEl.classList.add("show-image");
+
+        if (settings.matchWallpaperColors) {
+          if (data.bingImageTheme) {
+            applyTheme(data.bingImageTheme);
+          } else {
+            extractWallpaperTheme(data.bingImageBase64, (theme) => {
+              chrome.storage.local.set({ bingImageTheme: theme });
+              applyTheme(theme);
+            });
+          }
+        } else {
+          applyTheme(null);
+        }
       } else {
         bgImageEl.classList.remove("show-image");
+        applyTheme(null);
       }
       if (bgAttrEl) {
         if (data.bingImageCopyright) {
@@ -1334,12 +1365,26 @@ function applyBackground() {
       }
     });
   } else if (settings.backgroundSource === "unsplash") {
-    chrome.storage.local.get(["unsplashImageBase64", "unsplashImageAuthor", "unsplashImageAuthorLink", "unsplashImageLink"], (data) => {
+    chrome.storage.local.get(["unsplashImageBase64", "unsplashImageAuthor", "unsplashImageAuthorLink", "unsplashImageLink", "unsplashImageTheme"], (data) => {
       if (data.unsplashImageBase64) {
         bgImageEl.style.backgroundImage = `url(${data.unsplashImageBase64})`;
         bgImageEl.classList.add("show-image");
+
+        if (settings.matchWallpaperColors) {
+          if (data.unsplashImageTheme) {
+            applyTheme(data.unsplashImageTheme);
+          } else {
+            extractWallpaperTheme(data.unsplashImageBase64, (theme) => {
+              chrome.storage.local.set({ unsplashImageTheme: theme });
+              applyTheme(theme);
+            });
+          }
+        } else {
+          applyTheme(null);
+        }
       } else {
         bgImageEl.classList.remove("show-image");
+        applyTheme(null);
       }
 
       if (bgAttrEl) {
@@ -1353,6 +1398,7 @@ function applyBackground() {
   } else {
     bgImageEl.classList.remove("show-image");
     if (bgAttrEl) bgAttrEl.innerHTML = "";
+    applyTheme(null);
   }
 }
 
@@ -1395,7 +1441,8 @@ function fetchAndCacheBingImage(resolution) {
                 bingImageDate: today,
                 bingImageResolution: resolution,
                 bingImageCopyright: copyright,
-                bingImageCopyrightLink: copyrightLink
+                bingImageCopyrightLink: copyrightLink,
+                bingImageTheme: null
               }, () => {
                 applyBackground();
               });
@@ -1465,7 +1512,8 @@ function fetchAndCacheUnsplashImage(force = false) {
                   unsplashImageAuthor: data.author ? data.author.name : "",
                   unsplashImageAuthorLink: data.author ? data.author.link : "",
                   unsplashImageLink: data.link || "",
-                  lastUnsplashCheckTime: now
+                  lastUnsplashCheckTime: now,
+                  unsplashImageTheme: null
                 }, () => {
                   applyBackground();
                   const btn = document.getElementById("unsplash-check-now");
@@ -1516,6 +1564,126 @@ function resetCheckButton() {
       }, 2000);
     }
   }
+}
+
+// HSL and RGB helper functions
+function hslToRgb(h, s, l) {
+  s /= 100;
+  l /= 100;
+  const k = n => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1));
+  return [Math.round(255 * f(0)), Math.round(255 * f(8)), Math.round(255 * f(4))];
+}
+
+function rgbToHsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h, s, l = (max + min) / 2;
+
+  if (max === min) {
+    h = s = 0;
+  } else {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+    h /= 6;
+  }
+  return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+}
+
+function extractWallpaperTheme(base64Image, callback) {
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = 10;
+    canvas.height = 10;
+    ctx.drawImage(img, 0, 0, 10, 10);
+
+    const imgData = ctx.getImageData(0, 0, 10, 10).data;
+    let bestColor = { r: 255, g: 255, b: 255, saturation: 0 };
+    let totalR = 0, totalG = 0, totalB = 0, count = 0;
+
+    for (let i = 0; i < imgData.length; i += 4) {
+      const r = imgData[i];
+      const g = imgData[i + 1];
+      const b = imgData[i + 2];
+      const a = imgData[i + 3];
+
+      if (a < 255) continue;
+
+      totalR += r;
+      totalG += g;
+      totalB += b;
+      count++;
+
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      const sat = max - min;
+
+      const brightness = (r + g + b) / 3;
+      if (brightness > 40 && brightness < 220) {
+        if (sat > bestColor.saturation) {
+          bestColor = { r, g, b, saturation: sat };
+        }
+      }
+    }
+
+    if (bestColor.saturation < 15 && count > 0) {
+      bestColor.r = Math.round(totalR / count);
+      bestColor.g = Math.round(totalG / count);
+      bestColor.b = Math.round(totalB / count);
+    }
+
+    // Convert to HSL
+    const [h, s, l] = rgbToHsl(bestColor.r, bestColor.g, bestColor.b);
+
+    // Generate themed versions
+    const accentLight = hslToRgb(h, Math.max(s, 50), 32); 
+    const accentDark = hslToRgb(h, Math.max(s, 60), 80); 
+
+    const panelRgbLight = hslToRgb(h, Math.min(s, 30), 96);
+    const panelRgbDark = hslToRgb(h, Math.min(s, 20), 12);
+
+    const bgLight = hslToRgb(h, Math.min(s, 15), 98);
+    const bgDark = hslToRgb(h, Math.min(s, 10), 8);
+
+    const theme = {
+      accentLight: `rgb(${accentLight[0]}, ${accentLight[1]}, ${accentLight[2]})`,
+      accentDark: `rgb(${accentDark[0]}, ${accentDark[1]}, ${accentDark[2]})`,
+      panelRgbLight: `${panelRgbLight[0]}, ${panelRgbLight[1]}, ${panelRgbLight[2]}`,
+      panelRgbDark: `${panelRgbDark[0]}, ${panelRgbDark[1]}, ${panelRgbDark[2]}`,
+      bgLight: `rgb(${bgLight[0]}, ${bgLight[1]}, ${bgLight[2]})`,
+      bgDark: `rgb(${bgDark[0]}, ${bgDark[1]}, ${bgDark[2]})`
+    };
+
+    callback(theme);
+  };
+  img.src = base64Image;
+}
+
+function applyTheme(theme) {
+  const root = document.documentElement;
+  if (!theme || !settings.matchWallpaperColors || settings.backgroundSource === "default") {
+    root.style.removeProperty("--wallpaper-accent-light");
+    root.style.removeProperty("--wallpaper-accent-dark");
+    root.style.removeProperty("--wallpaper-panel-rgb-light");
+    root.style.removeProperty("--wallpaper-panel-rgb-dark");
+    root.style.removeProperty("--wallpaper-bg-light");
+    root.style.removeProperty("--wallpaper-bg-dark");
+    return;
+  }
+  root.style.setProperty("--wallpaper-accent-light", theme.accentLight);
+  root.style.setProperty("--wallpaper-accent-dark", theme.accentDark);
+  root.style.setProperty("--wallpaper-panel-rgb-light", theme.panelRgbLight);
+  root.style.setProperty("--wallpaper-panel-rgb-dark", theme.panelRgbDark);
+  root.style.setProperty("--wallpaper-bg-light", theme.bgLight);
+  root.style.setProperty("--wallpaper-bg-dark", theme.bgDark);
 }
 
 // Register browser context menu to open settings
