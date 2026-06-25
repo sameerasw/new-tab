@@ -17,6 +17,7 @@
     <div id="background">
       <div id="bg-image"></div>
       <div id="bookmarks-container">
+        <div id="greeting"></div>
         <div id="clock-container">
           <div id="date"></div>
           <div id="clock"></div>
@@ -130,7 +131,6 @@
               <div class="setting-item">
                 <label>Position</label>
                 <div class="segmented-control" data-setting="datePosition">
-                  <button class="segment-btn" data-value="top">Top</button>
                   <button class="segment-btn" data-value="above">Above</button>
                   <button class="segment-btn active" data-value="below">Below</button>
                 </div>
@@ -157,6 +157,34 @@
                   <input type="color" id="axis-date-color" value="#ffffff">
                   <button type="button" id="axis-date-color-auto" class="project-button" style="cursor: pointer; font-size: 0.72rem; padding: 0.35rem 0.6rem;">Auto</button>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section" data-section="greeting">
+          <div class="settings-section-header">
+            <div class="settings-section-title">Greeting</div>
+          </div>
+          <div class="settings-section-content">
+            <div class="settings-section-content-inner">
+              <div class="setting-item">
+                <label for="axis-greeting-show">Show Greeting</label>
+                <label class="switch">
+                  <input type="checkbox" id="axis-greeting-show">
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <div class="setting-item" id="setting-item-greeting-name">
+                <label for="axis-greeting-name">Your Name</label>
+                <input type="text" id="axis-greeting-name" placeholder="Enter name">
+              </div>
+              <div class="setting-item" id="setting-item-greeting-visible">
+                <label for="axis-greeting-visible">Keep Visible</label>
+                <label class="switch">
+                  <input type="checkbox" id="axis-greeting-visible">
+                  <span class="switch-slider"></span>
+                </label>
               </div>
             </div>
           </div>

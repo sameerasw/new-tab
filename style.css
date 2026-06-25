@@ -51,6 +51,7 @@ body {
 }
 
 #bookmarks-container {
+  position: relative;
   z-index: 1;
   height: 100vh;
   width: 100vw;
@@ -70,7 +71,66 @@ body {
   align-items: center;
   width: 100%;
   height: 100%;
+  opacity: 0;
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.main-phase #clock-container {
   animation: fadeInUp 2.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+#greeting {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: "Google Sans Flex", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  color: var(--text-color);
+  user-select: none;
+  font-variation-settings:
+    "slnt" 0,
+    "wdth" 100,
+    "GRAD" 0,
+    "ROND" 100;
+  transition: 
+    opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+    font-size 1s cubic-bezier(0.16, 1, 0.3, 1),
+    top 1s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.greeting-phase #greeting {
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3.5rem;
+  font-weight: 300;
+  opacity: 1;
+}
+
+.greeting-phase #clock-container {
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  pointer-events: none;
+  animation: none;
+}
+
+.main-phase #greeting {
+  top: 2.2rem;
+  transform: translate(-50%, 0);
+  font-size: 1.35rem;
+  font-weight: 300;
+}
+
+body:not(.keep-greeting-visible) #greeting {
+  opacity: 0;
+}
+
+body.keep-greeting-visible #bookmarks-container.main-phase #greeting {
+  opacity: 0.85;
 }
 
 #date {
@@ -91,15 +151,6 @@ body {
     font-size 0.2s ease,
     font-weight 0.2s ease;
   text-align: center;
-}
-
-#date.pos-top {
-  position: absolute;
-  top: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0;
-  z-index: 10;
 }
 
 #date.pos-above {
@@ -549,6 +600,21 @@ body {
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   width: 60px;
   text-align: center;
+}
+
+/* Text input styling */
+.setting-item input[type="text"] {
+  background: var(--input-bg);
+  color: var(--input-color);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.85rem;
+  outline: none;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  width: 130px;
+  box-sizing: border-box;
 }
 
 .settings-section:not(.bing-active) .bing-only {

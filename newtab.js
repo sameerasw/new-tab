@@ -49,13 +49,23 @@ let settings = {
   dateWeight: 400,
   clockColor: "auto",
   dateColor: "auto",
-  bgZoomDuration: 2.5
+  bgZoomDuration: 2.5,
+  showGreeting: false,
+  greetingName: "",
+  keepGreetingVisible: false
 };
 
 // Load settings from storage
 function loadSettings() {
   chrome.storage.local.get(null, (data) => {
     settings = { ...settings, ...data };
+    
+    // Sanitize datePosition: if "top", change to "below"
+    if (settings.datePosition === "top") {
+      settings.datePosition = "below";
+      chrome.storage.local.set({ datePosition: "below" });
+    }
+
     loadAndRenderBookmarks();
     loadCustomCss();
     applyClockSettings();
@@ -64,6 +74,22 @@ function loadSettings() {
     applyBackground();
     updateBingImageIfNeeded();
     updateUnsplashImageIfNeeded();
+
+    // Greeting timing sequence
+    const bookmarksContainer = document.getElementById("bookmarks-container");
+    const greetingEl = document.getElementById("greeting");
+    if (settings.showGreeting && bookmarksContainer && greetingEl) {
+      bookmarksContainer.classList.add("greeting-phase");
+      greetingEl.textContent = `Hi ${settings.greetingName || 'User'}!`;
+      setTimeout(() => {
+        bookmarksContainer.classList.remove("greeting-phase");
+        bookmarksContainer.classList.add("main-phase");
+      }, 1500);
+    } else {
+      if (bookmarksContainer) {
+        bookmarksContainer.classList.add("main-phase");
+      }
+    }
 
     // Check for daily wallpaper updates every hour
     setInterval(() => {
@@ -608,16 +634,10 @@ function applyDateSettings() {
 
   const clockContainer = document.getElementById("clock-container");
   const clockElement = document.getElementById("clock");
-  const bookmarksContainer = document.getElementById("bookmarks-container");
 
-  dateElement.classList.remove("pos-top", "pos-above", "pos-below");
+  dateElement.classList.remove("pos-above", "pos-below");
 
-  if (settings.datePosition === "top") {
-    dateElement.classList.add("pos-top");
-    if (bookmarksContainer && dateElement.parentNode !== bookmarksContainer) {
-      bookmarksContainer.prepend(dateElement);
-    }
-  } else if (settings.datePosition === "above") {
+  if (settings.datePosition === "above") {
     dateElement.classList.add("pos-above");
     if (clockContainer && clockElement) {
       if (dateElement.nextSibling !== clockElement) {
@@ -793,6 +813,21 @@ function applyClockSettings() {
       updateCustomSlider(input);
     }
   });
+
+  // Update greeting settings in UI
+  const greetingShowCheckbox = document.getElementById("axis-greeting-show");
+  if (greetingShowCheckbox) {
+    greetingShowCheckbox.checked = !!settings.showGreeting;
+  }
+  const greetingNameInput = document.getElementById("axis-greeting-name");
+  if (greetingNameInput) {
+    greetingNameInput.value = settings.greetingName || "";
+  }
+  const greetingVisibleCheckbox = document.getElementById("axis-greeting-visible");
+  if (greetingVisibleCheckbox) {
+    greetingVisibleCheckbox.checked = !!settings.keepGreetingVisible;
+  }
+  document.body.classList.toggle("keep-greeting-visible", !!settings.keepGreetingVisible);
 
   calculateNaturalHeight();
 }
@@ -1037,6 +1072,38 @@ function initSettingsUI() {
       updateUnsplashImageIfNeeded(true);
     });
   }
+
+  // Greeting setting event listeners
+  const greetingShowCheckbox = document.getElementById("axis-greeting-show");
+  if (greetingShowCheckbox) {
+    greetingShowCheckbox.checked = !!settings.showGreeting;
+    greetingShowCheckbox.addEventListener("change", (e) => {
+      const checked = e.target.checked;
+      settings.showGreeting = checked;
+      chrome.storage.local.set({ showGreeting: checked });
+    });
+  }
+
+  const greetingNameInput = document.getElementById("axis-greeting-name");
+  if (greetingNameInput) {
+    greetingNameInput.value = settings.greetingName || "";
+    greetingNameInput.addEventListener("input", (e) => {
+      const val = e.target.value;
+      settings.greetingName = val;
+      chrome.storage.local.set({ greetingName: val });
+    });
+  }
+
+  const greetingVisibleCheckbox = document.getElementById("axis-greeting-visible");
+  if (greetingVisibleCheckbox) {
+    greetingVisibleCheckbox.checked = !!settings.keepGreetingVisible;
+    greetingVisibleCheckbox.addEventListener("change", (e) => {
+      const checked = e.target.checked;
+      settings.keepGreetingVisible = checked;
+      chrome.storage.local.set({ keepGreetingVisible: checked });
+      applyClockSettings();
+    });
+  }
 }
 
 function toggleSettings() {
@@ -1088,6 +1155,7 @@ function applyScrollTransition(progress) {
     const clockContainer = document.getElementById("clock-container");
     if (clockContainer) {
       clockContainer.style.animation = "none";
+      clockContainer.style.opacity = "1";
     }
   }
 
