@@ -667,7 +667,7 @@ body:has(#settings-modal.show .settings-section[data-section="bookmarks"]:hover)
 
 #bg-image.show-image {
   display: block;
-  animation: bgFadeInZoom 2.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: bgFadeInZoom var(--bg-zoom-duration, 2.5s) cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes bgFadeInZoom {

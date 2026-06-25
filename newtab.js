@@ -48,7 +48,8 @@ let settings = {
   dateSize: 22,
   dateWeight: 400,
   clockColor: "auto",
-  dateColor: "auto"
+  dateColor: "auto",
+  bgZoomDuration: 2.5
 };
 
 // Load settings from storage
@@ -648,7 +649,8 @@ const SLIDER_MAP = [
   { sliderId: "axis-bm-spacing", settingKey: "bookmarkSpacing", default: 5 },
   { sliderId: "axis-bm-topsites", settingKey: "topSitesCount", default: 5 },
   { sliderId: "axis-bg-opacity", settingKey: "bgOpacity", default: 100 },
-  { sliderId: "axis-bg-blur",    settingKey: "bgBlur",    default: 0   }
+  { sliderId: "axis-bg-blur",    settingKey: "bgBlur",    default: 0   },
+  { sliderId: "axis-bg-zoom-duration", settingKey: "bgZoomDuration", default: 2.5 }
 ];
 
 function updateCustomSlider(inputEl) {
@@ -733,6 +735,7 @@ function applyClockSettings() {
   // Apply Background settings as CSS custom properties
   root.style.setProperty("--bg-opacity", `${(settings.bgOpacity ?? 100) / 100}`);
   root.style.setProperty("--bg-blur", `${settings.bgBlur ?? 0}px`);
+  root.style.setProperty("--bg-zoom-duration", `${settings.bgZoomDuration ?? 2.5}s`);
 
   // Update Show Recents UI elements
   const recentsCheckbox = document.getElementById("axis-bm-showrecents");
