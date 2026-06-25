@@ -75,12 +75,24 @@ function loadSettings() {
     updateBingImageIfNeeded();
     updateUnsplashImageIfNeeded();
 
+    // Helper to get time-of-day greeting
+    const getTimeOfDayGreeting = () => {
+      const hour = new Date().getHours();
+      if (hour >= 5 && hour < 12) return "Good morning";
+      if (hour >= 12 && hour < 17) return "Good afternoon";
+      if (hour >= 17 && hour < 22) return "Good evening";
+      return "Good night";
+    };
+
     // Greeting timing sequence
     const bookmarksContainer = document.getElementById("bookmarks-container");
     const greetingEl = document.getElementById("greeting");
     if (settings.showGreeting && bookmarksContainer && greetingEl) {
       bookmarksContainer.classList.add("greeting-phase");
-      greetingEl.textContent = `Hi ${settings.greetingName || 'User'}!`;
+      const name = settings.greetingName ? settings.greetingName.trim() : "";
+      greetingEl.textContent = name 
+        ? `Hi ${name}, ${getTimeOfDayGreeting()}!`
+        : `Hi, ${getTimeOfDayGreeting()}!`;
       setTimeout(() => {
         bookmarksContainer.classList.remove("greeting-phase");
         bookmarksContainer.classList.add("main-phase");
