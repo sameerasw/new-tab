@@ -911,6 +911,20 @@ function initSettingsUI() {
       chrome.storage.local.set({ clockColor: val });
       applyClockSettings();
     });
+    clockColorInput.addEventListener("click", () => {
+      document.body.classList.add("color-picker-open");
+    });
+    clockColorInput.addEventListener("focus", () => {
+      document.body.classList.add("color-picker-open");
+    });
+    clockColorInput.addEventListener("change", () => {
+      document.body.classList.remove("color-picker-open");
+    });
+    clockColorInput.addEventListener("blur", () => {
+      setTimeout(() => {
+        document.body.classList.remove("color-picker-open");
+      }, 150);
+    });
   }
 
   const clockColorAutoBtn = document.getElementById("axis-clock-color-auto");
@@ -929,6 +943,20 @@ function initSettingsUI() {
       settings.dateColor = val;
       chrome.storage.local.set({ dateColor: val });
       applyDateSettings();
+    });
+    dateColorInput.addEventListener("click", () => {
+      document.body.classList.add("color-picker-open");
+    });
+    dateColorInput.addEventListener("focus", () => {
+      document.body.classList.add("color-picker-open");
+    });
+    dateColorInput.addEventListener("change", () => {
+      document.body.classList.remove("color-picker-open");
+    });
+    dateColorInput.addEventListener("blur", () => {
+      setTimeout(() => {
+        document.body.classList.remove("color-picker-open");
+      }, 150);
     });
   }
 

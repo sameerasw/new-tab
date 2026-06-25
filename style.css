@@ -475,12 +475,12 @@ body {
 }
 
 .setting-item input[type="color"] {
-  width: 40px;
+  width: 44px;
   height: 30px;
   border: 1px solid var(--panel-border);
-  border-radius: 6px;
-  background: transparent;
-  padding: 0;
+  border-radius: 15px;
+  background: var(--input-bg);
+  padding: 3px;
   cursor: pointer;
   outline: none;
   box-sizing: border-box;
@@ -495,7 +495,7 @@ body {
 }
 .setting-item input[type="color"]::-webkit-color-swatch {
   border: none;
-  border-radius: 5px;
+  border-radius: 12px;
 }
 
 /* Segmented button control styling */
@@ -620,8 +620,9 @@ body:has(#settings-modal.show) #bookmarks-grid {
 
 /* Unblur Clock and Date when hovering over the Clock or Date settings section */
 body:has(#settings-modal.show .settings-section[data-section="clock"]:hover) #clock-container,
-body:has(#settings-modal.show .settings-section[data-section="date"]:hover) #clock-container {
-  filter: blur(0);
+body:has(#settings-modal.show .settings-section[data-section="date"]:hover) #clock-container,
+body.color-picker-open #clock-container {
+  filter: blur(0) !important;
 }
 
 /* Unblur Bookmarks when hovering over the Bookmarks settings section */
