@@ -1035,7 +1035,8 @@ function fetchAndCacheUnsplashImage(force = false) {
       return res.json();
     })
     .then((data) => {
-      if (data && data.url) {
+      const targetUrl = data.url_full || data.url;
+      if (data && targetUrl) {
         chrome.storage.local.get(["unsplashImageId", "unsplashImageBase64"], (cached) => {
           const now = Date.now();
           const today = new Date().toDateString();
@@ -1050,32 +1051,9 @@ function fetchAndCacheUnsplashImage(force = false) {
             return;
           }
           
-          if (force && cached.unsplashImageId === data.id && cached.unsplashImageBase64) {
-            chrome.storage.local.set({ 
-              unsplashImageDate: today,
-              lastUnsplashCheckTime: now
-            }, () => {
-              applyBackground();
-              const btn = document.getElementById("unsplash-check-now");
-              if (btn) {
-                const svg = btn.querySelector("svg");
-                if (svg) svg.style.animation = "";
-                const textSpan = btn.querySelector(".btn-text");
-                if (textSpan) {
-                  const origText = textSpan.textContent;
-                  textSpan.textContent = "Up to date";
-                  btn.style.color = "rgba(255, 255, 255, 0.6)";
-                  setTimeout(() => {
-                    textSpan.textContent = origText;
-                    btn.style.color = "";
-                  }, 2000);
-                }
-              }
-            });
-            return;
-          }
 
-          fetch(data.url)
+
+          fetch(targetUrl)
             .then((imgRes) => imgRes.blob())
             .then((blob) => {
               const reader = new FileReader();
