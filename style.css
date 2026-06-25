@@ -793,11 +793,6 @@ body:has(
 .project-button:hover {
   background: rgba(65, 247, 182, 0.08);
   border-color: #41f7b6;
-  transform: translateY(-1px);
-}
-
-.project-button:hover svg {
-  transform: scale(1.1);
 }
 
 /* Bookmark Folders & Collapsible Expansions */
@@ -872,5 +867,10 @@ body:has(
   box-shadow: 0 6px 16px var(--shadow-color) !important;
   filter: brightness(1.15) saturate(1.1) !important;
   border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 

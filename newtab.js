@@ -55,6 +55,11 @@ function loadSettings() {
     applyBackground();
     updateBingImageIfNeeded();
     updateUnsplashImageIfNeeded();
+
+    // Check for daily wallpaper updates every hour
+    setInterval(() => {
+      updateUnsplashImageIfNeeded();
+    }, 3600000);
   });
 }
 
@@ -793,6 +798,17 @@ function initSettingsUI() {
       }
     });
   }
+
+  const unsplashCheckBtn = document.getElementById("unsplash-check-now");
+  if (unsplashCheckBtn) {
+    unsplashCheckBtn.addEventListener("click", () => {
+      const svg = unsplashCheckBtn.querySelector("svg");
+      if (svg) svg.style.animation = "spin 1s linear infinite";
+      const textSpan = unsplashCheckBtn.querySelector(".btn-text");
+      if (textSpan) textSpan.textContent = "Checking...";
+      updateUnsplashImageIfNeeded(true);
+    });
+  }
 }
 
 function toggleSettings() {
@@ -993,20 +1009,24 @@ function fetchAndCacheBingImage(resolution) {
     .catch((err) => console.error("Error fetching Bing Image of the Day metadata:", err));
 }
 
-function updateUnsplashImageIfNeeded() {
+function updateUnsplashImageIfNeeded(force = false) {
   if (settings.backgroundSource !== "unsplash") return;
 
-  chrome.storage.local.get(["unsplashImageDate", "unsplashImageId", "unsplashImageBase64"], (data) => {
+  chrome.storage.local.get(["unsplashImageDate", "unsplashImageId", "unsplashImageBase64", "lastUnsplashCheckTime"], (data) => {
     const today = new Date().toDateString();
-    if (data.unsplashImageDate !== today || !data.unsplashImageBase64) {
-      fetchAndCacheUnsplashImage();
+    const oneHour = 3600000;
+    const now = Date.now();
+    const lastCheck = data.lastUnsplashCheckTime || 0;
+
+    if (force || data.unsplashImageDate !== today || !data.unsplashImageBase64 || (now - lastCheck) > oneHour) {
+      fetchAndCacheUnsplashImage(force);
     } else {
       applyBackground();
     }
   });
 }
 
-function fetchAndCacheUnsplashImage() {
+function fetchAndCacheUnsplashImage(force = false) {
   const jsonUrl = "https://sameerasw.com/unsplash-today.json";
   
   fetch(jsonUrl)
@@ -1017,10 +1037,40 @@ function fetchAndCacheUnsplashImage() {
     .then((data) => {
       if (data && data.url) {
         chrome.storage.local.get(["unsplashImageId", "unsplashImageBase64"], (cached) => {
-          if (cached.unsplashImageId === data.id && cached.unsplashImageBase64) {
-            const today = new Date().toDateString();
-            chrome.storage.local.set({ unsplashImageDate: today }, () => {
+          const now = Date.now();
+          const today = new Date().toDateString();
+          
+          if (!force && cached.unsplashImageId === data.id && cached.unsplashImageBase64) {
+            chrome.storage.local.set({ 
+              unsplashImageDate: today,
+              lastUnsplashCheckTime: now
+            }, () => {
               applyBackground();
+            });
+            return;
+          }
+          
+          if (force && cached.unsplashImageId === data.id && cached.unsplashImageBase64) {
+            chrome.storage.local.set({ 
+              unsplashImageDate: today,
+              lastUnsplashCheckTime: now
+            }, () => {
+              applyBackground();
+              const btn = document.getElementById("unsplash-check-now");
+              if (btn) {
+                const svg = btn.querySelector("svg");
+                if (svg) svg.style.animation = "";
+                const textSpan = btn.querySelector(".btn-text");
+                if (textSpan) {
+                  const origText = textSpan.textContent;
+                  textSpan.textContent = "Up to date";
+                  btn.style.color = "rgba(255, 255, 255, 0.6)";
+                  setTimeout(() => {
+                    textSpan.textContent = origText;
+                    btn.style.color = "";
+                  }, 2000);
+                }
+              }
             });
             return;
           }
@@ -1031,25 +1081,64 @@ function fetchAndCacheUnsplashImage() {
               const reader = new FileReader();
               reader.onloadend = () => {
                 const base64data = reader.result;
-                const today = new Date().toDateString();
                 chrome.storage.local.set({
                   unsplashImageBase64: base64data,
                   unsplashImageDate: today,
                   unsplashImageId: data.id,
                   unsplashImageAuthor: data.author ? data.author.name : "",
                   unsplashImageAuthorLink: data.author ? data.author.link : "",
-                  unsplashImageLink: data.link || ""
+                  unsplashImageLink: data.link || "",
+                  lastUnsplashCheckTime: now
                 }, () => {
                   applyBackground();
+                  const btn = document.getElementById("unsplash-check-now");
+                  if (btn) {
+                    const svg = btn.querySelector("svg");
+                    if (svg) svg.style.animation = "";
+                    const textSpan = btn.querySelector(".btn-text");
+                    if (textSpan) {
+                      const origText = textSpan.textContent;
+                      textSpan.textContent = "Updated!";
+                      btn.style.color = "#41f7b6";
+                      setTimeout(() => {
+                        textSpan.textContent = origText;
+                        btn.style.color = "";
+                      }, 2000);
+                    }
+                  }
                 });
               };
               reader.readAsDataURL(blob);
             })
-            .catch((err) => console.error("Error reading Unsplash image data:", err));
+            .catch((err) => {
+              console.error("Error reading Unsplash image data:", err);
+              resetCheckButton();
+            });
         });
       }
     })
-    .catch((err) => console.error("Error fetching daily Unsplash image metadata:", err));
+    .catch((err) => {
+      console.error("Error fetching daily Unsplash image metadata:", err);
+      resetCheckButton();
+    });
+}
+
+function resetCheckButton() {
+  const btn = document.getElementById("unsplash-check-now");
+  if (btn) {
+    const svg = btn.querySelector("svg");
+    if (svg) svg.style.animation = "";
+    const textSpan = btn.querySelector(".btn-text");
+    if (textSpan) {
+      const origText = textSpan.textContent;
+      textSpan.textContent = "Error!";
+      btn.style.color = "#ff4a4a";
+      setTimeout(() => {
+        textSpan.textContent = origText;
+        btn.style.color = "";
+      }, 2000);
+    }
+  }
 }
 
 // Register browser context menu to open settings
