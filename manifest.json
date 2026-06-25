@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Glance New Tab by sameerasw.com",
   "short_name": "Glance",
-  "version": "2.0",
+  "version": "3.0",
   "description": "Replaces the new tab page with a grid of bookmarks from a chosen folder. Customizable layout and style.",
   "chrome_url_overrides": {
     "newtab": "newtab.html"
