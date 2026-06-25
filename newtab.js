@@ -49,6 +49,7 @@ let settings = {
   dateWeight: 400,
   clockColor: "auto",
   dateColor: "auto",
+  greetingColor: "auto",
   bgZoomDuration: 2.5,
   showGreeting: false,
   greetingName: "",
@@ -841,6 +842,15 @@ function applyClockSettings() {
   }
   document.body.classList.toggle("keep-greeting-visible", !!settings.keepGreetingVisible);
 
+  const greetingEl = document.getElementById("greeting");
+  if (greetingEl) {
+    greetingEl.style.color = settings.greetingColor === "auto" ? "" : settings.greetingColor;
+  }
+  const greetingColorInput = document.getElementById("axis-greeting-color");
+  if (greetingColorInput) {
+    greetingColorInput.value = settings.greetingColor === "auto" ? "#ffffff" : settings.greetingColor;
+  }
+
   calculateNaturalHeight();
 }
 
@@ -1113,6 +1123,39 @@ function initSettingsUI() {
       const checked = e.target.checked;
       settings.keepGreetingVisible = checked;
       chrome.storage.local.set({ keepGreetingVisible: checked });
+      applyClockSettings();
+    });
+  }
+
+  const greetingColorInput = document.getElementById("axis-greeting-color");
+  if (greetingColorInput) {
+    greetingColorInput.addEventListener("input", (e) => {
+      const val = e.target.value;
+      settings.greetingColor = val;
+      chrome.storage.local.set({ greetingColor: val });
+      applyClockSettings();
+    });
+    greetingColorInput.addEventListener("click", () => {
+      document.body.classList.add("color-picker-open");
+    });
+    greetingColorInput.addEventListener("focus", () => {
+      document.body.classList.add("color-picker-open");
+    });
+    greetingColorInput.addEventListener("change", () => {
+      document.body.classList.remove("color-picker-open");
+    });
+    greetingColorInput.addEventListener("blur", () => {
+      setTimeout(() => {
+        document.body.classList.remove("color-picker-open");
+      }, 150);
+    });
+  }
+
+  const greetingColorAutoBtn = document.getElementById("axis-greeting-color-auto");
+  if (greetingColorAutoBtn) {
+    greetingColorAutoBtn.addEventListener("click", () => {
+      settings.greetingColor = "auto";
+      chrome.storage.local.set({ greetingColor: "auto" });
       applyClockSettings();
     });
   }

@@ -97,7 +97,8 @@ body {
     opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
     transform 1s cubic-bezier(0.16, 1, 0.3, 1),
     font-size 1s cubic-bezier(0.16, 1, 0.3, 1),
-    top 1s cubic-bezier(0.16, 1, 0.3, 1);
+    top 1s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
   text-align: center;
   z-index: 10;
   pointer-events: none;
@@ -678,9 +679,10 @@ body.keep-greeting-visible #bookmarks-container.main-phase #greeting {
   transition: filter 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* When settings panel is open, blur both clock and bookmarks */
+/* When settings panel is open, blur clock, bookmarks and greeting */
 body:has(#settings-modal.show) #clock-container,
-body:has(#settings-modal.show) #bookmarks-grid {
+body:has(#settings-modal.show) #bookmarks-grid,
+body:has(#settings-modal.show) #greeting {
   filter: blur(12px);
 }
 
@@ -688,6 +690,12 @@ body:has(#settings-modal.show) #bookmarks-grid {
 body:has(#settings-modal.show .settings-section[data-section="clock"]:hover) #clock-container,
 body:has(#settings-modal.show .settings-section[data-section="date"]:hover) #clock-container,
 body.color-picker-open #clock-container {
+  filter: blur(0) !important;
+}
+
+/* Unblur Greeting when hovering over the Greeting settings section */
+body:has(#settings-modal.show .settings-section[data-section="greeting"]:hover) #greeting,
+body.color-picker-open #greeting {
   filter: blur(0) !important;
 }
 
