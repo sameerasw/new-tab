@@ -55,7 +55,8 @@ let settings = {
   bgZoomDuration: 2.5,
   showGreeting: false,
   greetingName: "",
-  keepGreetingVisible: false
+  keepGreetingVisible: false,
+  themeMode: "auto"
 };
 
 // Load settings from storage
@@ -73,6 +74,7 @@ function loadSettings() {
     loadCustomCss();
     applyClockSettings();
     applyDateSettings();
+    applyThemeMode();
     initSettingsUI();
     applyBackground();
     updateBingImageIfNeeded();
@@ -1217,6 +1219,16 @@ function initSettingsUI() {
       applyBackground();
     });
   }
+
+  // Theme Mode Picker click listeners
+  document.querySelectorAll(".theme-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const mode = btn.dataset.theme;
+      settings.themeMode = mode;
+      chrome.storage.local.set({ themeMode: mode });
+      applyThemeMode();
+    });
+  });
 }
 
 function toggleSettings() {
@@ -1684,6 +1696,22 @@ function applyTheme(theme) {
   root.style.setProperty("--wallpaper-panel-rgb-dark", theme.panelRgbDark);
   root.style.setProperty("--wallpaper-bg-light", theme.bgLight);
   root.style.setProperty("--wallpaper-bg-dark", theme.bgDark);
+}
+
+function applyThemeMode() {
+  const root = document.documentElement;
+  if (settings.themeMode === "light") {
+    root.style.colorScheme = "light";
+  } else if (settings.themeMode === "dark") {
+    root.style.colorScheme = "dark";
+  } else {
+    root.style.colorScheme = "light dark";
+  }
+
+  // Update theme picker buttons active class
+  document.querySelectorAll(".theme-btn").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.theme === settings.themeMode);
+  });
 }
 
 // Register browser context menu to open settings

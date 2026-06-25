@@ -354,13 +354,55 @@ body.keep-greeting-visible #bookmarks-container.main-phase #greeting {
   display: none;
 }
 
-#settings-modal h3 {
+.settings-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin: 0.2rem 0.4rem 0.8rem 0.4rem;
+}
+
+#settings-modal h3 {
+  margin: 0;
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 1.15rem;
   font-weight: 600;
   color: var(--accent-text-color);
+}
+
+.theme-mode-picker {
+  display: flex;
+  gap: 2px;
+  background: light-dark(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.06));
+  padding: 3px;
+  border-radius: 20px;
+}
+
+.theme-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
+  opacity: 0.5;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+}
+
+.theme-btn:hover {
+  opacity: 0.8;
+  background: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.03));
+}
+
+.theme-btn.active {
+  background: var(--accent-text-color);
+  color: var(--bg-color);
+  opacity: 1;
 }
 
 .settings-section {
