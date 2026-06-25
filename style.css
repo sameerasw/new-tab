@@ -626,6 +626,10 @@ body.keep-greeting-visible #bookmarks-container.main-phase #greeting {
   display: none;
 }
 
+.settings-section:not(.default-active) .default-only {
+  display: none;
+}
+
 .settings-section:not(.bing-active):not(.unsplash-active) .custom-bg-only {
   display: none;
 }

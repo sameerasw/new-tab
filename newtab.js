@@ -50,6 +50,7 @@ let settings = {
   clockColor: "auto",
   dateColor: "auto",
   greetingColor: "auto",
+  backgroundColor: "auto",
   bgZoomDuration: 2.5,
   showGreeting: false,
   greetingName: "",
@@ -817,6 +818,12 @@ function applyClockSettings() {
   if (bgSection) {
     bgSection.classList.toggle("bing-active", settings.backgroundSource === "bing");
     bgSection.classList.toggle("unsplash-active", settings.backgroundSource === "unsplash");
+    bgSection.classList.toggle("default-active", settings.backgroundSource === "default");
+  }
+
+  const bgColorInput = document.getElementById("axis-bg-color");
+  if (bgColorInput) {
+    bgColorInput.value = settings.backgroundColor === "auto" ? "#222222" : settings.backgroundColor;
   }
 
   SLIDER_MAP.forEach(({ sliderId, settingKey, default: def }) => {
@@ -1159,6 +1166,40 @@ function initSettingsUI() {
       applyClockSettings();
     });
   }
+
+  const bgColorInput = document.getElementById("axis-bg-color");
+  if (bgColorInput) {
+    bgColorInput.addEventListener("input", (e) => {
+      const val = e.target.value;
+      settings.backgroundColor = val;
+      chrome.storage.local.set({ backgroundColor: val });
+      applyBackground();
+    });
+    bgColorInput.addEventListener("click", () => {
+      document.body.classList.add("color-picker-open");
+    });
+    bgColorInput.addEventListener("focus", () => {
+      document.body.classList.add("color-picker-open");
+    });
+    bgColorInput.addEventListener("change", () => {
+      document.body.classList.remove("color-picker-open");
+    });
+    bgColorInput.addEventListener("blur", () => {
+      setTimeout(() => {
+        document.body.classList.remove("color-picker-open");
+      }, 150);
+    });
+  }
+
+  const bgColorAutoBtn = document.getElementById("axis-bg-color-auto");
+  if (bgColorAutoBtn) {
+    bgColorAutoBtn.addEventListener("click", () => {
+      settings.backgroundColor = "auto";
+      chrome.storage.local.set({ backgroundColor: "auto" });
+      applyBackground();
+      applyClockSettings();
+    });
+  }
 }
 
 function toggleSettings() {
@@ -1263,6 +1304,13 @@ function applyBackground() {
   const bgImageEl = document.getElementById("bg-image");
   const bgAttrEl = document.getElementById("bg-attribution");
   if (!bgImageEl) return;
+
+  const root = document.documentElement;
+  if (settings.backgroundSource === "default" && settings.backgroundColor !== "auto") {
+    root.style.setProperty("--bg-color", settings.backgroundColor);
+  } else {
+    root.style.removeProperty("--bg-color");
+  }
 
   if (settings.backgroundSource === "bing") {
     chrome.storage.local.get(["bingImageBase64", "bingImageCopyright", "bingImageCopyrightLink"], (data) => {
