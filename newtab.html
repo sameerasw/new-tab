@@ -18,6 +18,7 @@
       <div id="bg-image"></div>
       <div id="bookmarks-container">
         <div id="clock-container">
+          <div id="date"></div>
           <div id="clock"></div>
         </div>
         <div id="bookmarks-grid"></div>
@@ -82,6 +83,63 @@
                 <label for="axis-size">Size</label>
                 <input type="range" id="axis-size" min="30" max="120" value="55">
                 <div class="m3-slider" data-input="axis-size">
+                  <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
+                  <div class="m3-slider-thumb"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section" data-section="date">
+          <div class="settings-section-header">
+            <div class="settings-section-title">Date</div>
+          </div>
+          <div class="settings-section-content">
+            <div class="settings-section-content-inner">
+              <div class="setting-item">
+                <label for="axis-date-show">Show Date</label>
+                <label class="switch">
+                  <input type="checkbox" id="axis-date-show" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <div class="setting-item">
+                <label for="axis-date-format">Format</label>
+                <select id="axis-date-format" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 0.4rem 0.6rem; color: var(--text-color); font-size: 0.8rem; outline: none; cursor: pointer; width: 60%; box-sizing: border-box;">
+                  <option value="0">Thursday, June 25, 2026</option>
+                  <option value="1">June 25, 2026</option>
+                  <option value="2">2026-06-25</option>
+                  <option value="3">25/06/2026</option>
+                  <option value="4">06/25/2026</option>
+                  <option value="5">Thu, Jun 25</option>
+                  <option value="6">Thursday, 25 June</option>
+                  <option value="7">June 25</option>
+                  <option value="8">25 June 2026</option>
+                  <option value="9">Thu, 25 Jun 2026</option>
+                  <option value="10">2026.06.25</option>
+                </select>
+              </div>
+              <div class="setting-item">
+                <label>Position</label>
+                <div class="segmented-control" data-setting="datePosition">
+                  <button class="segment-btn" data-value="top">Top</button>
+                  <button class="segment-btn" data-value="above">Above</button>
+                  <button class="segment-btn active" data-value="below">Below</button>
+                </div>
+              </div>
+              <div class="setting-item">
+                <label for="axis-date-size">Size</label>
+                <input type="range" id="axis-date-size" min="12" max="60" value="22">
+                <div class="m3-slider" data-input="axis-date-size">
+                  <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
+                  <div class="m3-slider-thumb"></div>
+                </div>
+              </div>
+              <div class="setting-item">
+                <label for="axis-date-weight">Weight</label>
+                <input type="range" id="axis-date-weight" min="100" max="1000" value="400">
+                <div class="m3-slider" data-input="axis-date-weight">
                   <div class="m3-slider-track"><div class="m3-slider-fill"></div></div>
                   <div class="m3-slider-thumb"></div>
                 </div>

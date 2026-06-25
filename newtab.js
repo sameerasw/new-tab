@@ -41,7 +41,12 @@ let settings = {
   clockFormat: "12h",
   clockLeadingZero: true,
   clockSeparator: ":",
-  showSettingsEntry: true
+  showSettingsEntry: true,
+  showDate: true,
+  dateFormat: "0",
+  datePosition: "below",
+  dateSize: 22,
+  dateWeight: 400
 };
 
 // Load settings from storage
@@ -51,6 +56,7 @@ function loadSettings() {
     loadAndRenderBookmarks();
     loadCustomCss();
     applyClockSettings();
+    applyDateSettings();
     initSettingsUI();
     applyBackground();
     updateBingImageIfNeeded();
@@ -503,22 +509,138 @@ function updateClock() {
 
   const separator = settings.clockSeparator !== undefined ? settings.clockSeparator : ":";
   clockElement.textContent = `${hoursStr}${separator}${minutes}`;
+
+  updateDate();
 }
 setInterval(updateClock, 1000);
 updateClock();
+
+function updateDate() {
+  const dateElement = document.getElementById("date");
+  if (!dateElement) return;
+
+  if (!settings.showDate) {
+    dateElement.style.display = "none";
+    return;
+  }
+  dateElement.style.display = "";
+
+  const now = new Date();
+  
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const shortDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  const shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const dayName = days[now.getDay()];
+  const shortDayName = shortDays[now.getDay()];
+  const monthName = months[now.getMonth()];
+  const shortMonthName = shortMonths[now.getMonth()];
+  const dateNum = now.getDate();
+  const year = now.getFullYear();
+  
+  const pad = (n) => String(n).padStart(2, "0");
+
+  let formattedDate = "";
+  const formatIndex = String(settings.dateFormat);
+
+  switch (formatIndex) {
+    case "0": // Thursday, June 25, 2026
+      formattedDate = `${dayName}, ${monthName} ${dateNum}, ${year}`;
+      break;
+    case "1": // June 25, 2026
+      formattedDate = `${monthName} ${dateNum}, ${year}`;
+      break;
+    case "2": // 2026-06-25
+      formattedDate = `${year}-${pad(now.getMonth() + 1)}-${pad(dateNum)}`;
+      break;
+    case "3": // 25/06/2026
+      formattedDate = `${pad(dateNum)}/${pad(now.getMonth() + 1)}/${year}`;
+      break;
+    case "4": // 06/25/2026
+      formattedDate = `${pad(now.getMonth() + 1)}/${pad(dateNum)}/${year}`;
+      break;
+    case "5": // Thu, Jun 25
+      formattedDate = `${shortDayName}, ${shortMonthName} ${dateNum}`;
+      break;
+    case "6": // Thursday, 25 June
+      formattedDate = `${dayName}, ${dateNum} ${monthName}`;
+      break;
+    case "7": // June 25
+      formattedDate = `${monthName} ${dateNum}`;
+      break;
+    case "8": // 25 June 2026
+      formattedDate = `${dateNum} ${monthName} ${year}`;
+      break;
+    case "9": // Thu, 25 Jun 2026
+      formattedDate = `${shortDayName}, ${dateNum} ${shortMonthName} ${year}`;
+      break;
+    case "10": // 2026.06.25
+      formattedDate = `${year}.${pad(now.getMonth() + 1)}.${pad(dateNum)}`;
+      break;
+    default:
+      formattedDate = `${dayName}, ${monthName} ${dateNum}, ${year}`;
+  }
+
+  dateElement.textContent = formattedDate;
+}
+
+function applyDateSettings() {
+  const dateElement = document.getElementById("date");
+  if (!dateElement) return;
+
+  dateElement.style.display = settings.showDate ? "" : "none";
+  dateElement.style.fontSize = `${settings.dateSize ?? 22}px`;
+  dateElement.style.fontWeight = settings.dateWeight ?? 400;
+  dateElement.style.fontVariationSettings = `"slnt" 0, "wdth" 100, "GRAD" 0, "ROND" 100, "wght" ${settings.dateWeight ?? 400}`;
+
+  const clockContainer = document.getElementById("clock-container");
+  const clockElement = document.getElementById("clock");
+  const bookmarksContainer = document.getElementById("bookmarks-container");
+
+  dateElement.classList.remove("pos-top", "pos-above", "pos-below");
+
+  if (settings.datePosition === "top") {
+    dateElement.classList.add("pos-top");
+    if (bookmarksContainer && dateElement.parentNode !== bookmarksContainer) {
+      bookmarksContainer.prepend(dateElement);
+    }
+  } else if (settings.datePosition === "above") {
+    dateElement.classList.add("pos-above");
+    if (clockContainer && clockElement) {
+      if (dateElement.nextSibling !== clockElement) {
+        clockContainer.insertBefore(dateElement, clockElement);
+      }
+    }
+  } else {
+    dateElement.classList.add("pos-below");
+    if (clockContainer) {
+      if (dateElement.previousSibling !== clockElement) {
+        clockContainer.appendChild(dateElement);
+      }
+    }
+  }
+
+  updateDate();
+}
 
 const SLIDER_MAP = [
   { sliderId: "axis-weight", settingKey: "clockWeight", default: 300 },
   { sliderId: "axis-width",  settingKey: "clockWidth",  default: 100 },
   { sliderId: "axis-round",  settingKey: "clockRound",  default: 0   },
   { sliderId: "axis-size",   settingKey: "clockSize",   default: 55  },
+  { sliderId: "axis-date-size", settingKey: "dateSize", default: 22 },
+  { sliderId: "axis-date-weight", settingKey: "dateWeight", default: 400 },
   { sliderId: "axis-bm-width", settingKey: "bookmarkMaxWidth", default: 80 },
   { sliderId: "axis-bm-btnsize", settingKey: "bookmarkButtonSize", default: 56 },
   { sliderId: "axis-bm-iconsize", settingKey: "bookmarkIconSize", default: 28 },
   { sliderId: "axis-bm-spacing", settingKey: "bookmarkSpacing", default: 5 },
   { sliderId: "axis-bm-topsites", settingKey: "topSitesCount", default: 5 },
   { sliderId: "axis-bg-opacity", settingKey: "bgOpacity", default: 100 },
-  { sliderId: "axis-bg-blur", settingKey: "bgBlur", default: 0 }
+  { sliderId: "axis-bg-blur",    settingKey: "bgBlur",    default: 0   }
 ];
 
 function updateCustomSlider(inputEl) {
@@ -554,6 +676,7 @@ function initCustomSlider(inputEl, settingKey) {
     settings[settingKey] = val;
     chrome.storage.local.set({ [settingKey]: val });
     applyClockSettings();
+    applyDateSettings();
     if (settingKey === "topSitesCount") {
       loadAndRenderBookmarks();
     }
@@ -746,6 +869,26 @@ function initSettingsUI() {
     });
   }
 
+  const dateCheckbox = document.getElementById("axis-date-show");
+  if (dateCheckbox) {
+    dateCheckbox.addEventListener("change", (e) => {
+      const checked = e.target.checked;
+      settings.showDate = checked;
+      chrome.storage.local.set({ showDate: checked });
+      applyDateSettings();
+    });
+  }
+
+  const dateFormatSelect = document.getElementById("axis-date-format");
+  if (dateFormatSelect) {
+    dateFormatSelect.addEventListener("change", (e) => {
+      const val = e.target.value;
+      settings.dateFormat = val;
+      chrome.storage.local.set({ dateFormat: val });
+      applyDateSettings();
+    });
+  }
+
   // Wire up segmented controls
   document.querySelectorAll(".segmented-control").forEach((ctrl) => {
     const settingKey = ctrl.dataset.setting;
@@ -774,6 +917,8 @@ function initSettingsUI() {
       } else if (settingKey === "bingResolution") {
         applyClockSettings();
         updateBingImageIfNeeded();
+      } else if (settingKey === "datePosition") {
+        applyDateSettings();
       }
     });
   });
